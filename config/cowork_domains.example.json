@@ -1,0 +1,25 @@
+{
+  "_comment": "Copia questo file in cowork_domains.json (nella radice del progetto, FUORI da git) e compilalo con i tuoi dati reali. Ogni chiave di primo livello = un dominio/progetto. Puoi averne più di uno; quello con default:true è usato quando non passi --domain.",
+
+  "_schema": {
+    "api_url":       "URL di core/tasks.php sul tuo server, SENZA querystring (es. https://tuosito.it/cowork/tasks.php)",
+    "api_token":      "Lo stesso token che hai messo in AUTH_TOKEN dentro core/tasks.php",
+    "default":        "true = questo dominio è usato se non specifichi --domain",
+    "content": {
+      "_comment": "Sezione libera: qui ci metti le convenzioni della TUA automazione (lingua, tono, formati, regole). CLAUDE.md la legge e la applica: non è uno schema fisso, adattala al tuo caso.",
+      "language": "es. it",
+      "notes":    "es. istruzioni libere che vuoi che Claude rispetti sempre per questo dominio"
+    }
+  },
+
+  "esempio.com": {
+    "api_url":   "https://esempio.com/cowork/tasks.php",
+    "api_token": "INCOLLA_QUI_IL_TUO_TOKEN",
+    "default":   true,
+
+    "content": {
+      "language": "it",
+      "notes": "Esempio minimo: descrivi qui in linguaggio naturale come vuoi che Claude si comporti per i task di questo dominio."
+    }
+  }
+}

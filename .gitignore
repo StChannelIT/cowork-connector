@@ -1,0 +1,24 @@
+# Config con dati reali (token, URL) — non va committato
+cowork_domains.json
+
+# Connessioni reali dell'utente (config/note/DB locali per-connessione) —
+# resta solo la convenzione (connections/README.md, connections/.gitkeep)
+connections/*/
+
+# Stato locale generato a runtime
+backups/
+covers/
+assets/
+*.db
+*.db-journal
+cowork_completions.json
+cowork_local_queue.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
