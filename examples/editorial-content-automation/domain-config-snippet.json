@@ -1,17 +1,17 @@
 {
-  "_comment": "Blocco di esempio da incollare dentro il tuo cowork_domains.json, sotto la chiave del tuo dominio reale. Sostituisci api_url/api_token/UUID/URL con i tuoi valori.",
+  "_comment": "[IT version: domain-config-snippet.it.json] Example block to paste into your cowork_domains.json, under your real domain's key. Replace api_url/api_token/UUID/URLs with your own values.",
 
-  "esempio.com": {
-    "api_url":   "https://esempio.com/cowork/tasks.php",
-    "api_token": "INCOLLA_QUI_IL_TUO_TOKEN",
+  "example.com": {
+    "api_url":   "https://example.com/cowork/tasks.php",
+    "api_token": "PASTE_YOUR_TOKEN_HERE",
     "default":   true,
 
     "content": {
-      "language":       "it",
-      "tone":           "Pratico, diretto, esempi reali, struttura a step con titoli ##. Niente traduzioni letterali, niente repost.",
+      "language":       "en",
+      "tone":           "Practical, direct, real examples, step-based structure with ## headings. No literal translations, no reposting.",
       "no_frontmatter": true,
       "title_max_chars": 70,
-      "research": "Priorita ai contenuti verificati: se la fonte e' povera amplia con ricerca web, non inventare fatti, dati o citazioni."
+      "research": "Prioritize verified content: if the source is thin, expand with web research, don't invent facts, data, or quotes."
     },
 
     "publish": {
@@ -27,27 +27,27 @@
     "social": {
       "enabled":          true,
       "deliver_in":       "meta.social_text",
-      "format":           "Stringa unica: '=== FACEBOOK ===\\n\\n<post fb>\\n\\n=== LINKEDIN ===\\n\\n<post linkedin>'",
-      "link_placeholder": "{{URL_ARTICOLO}}",
+      "format":           "Single string: '=== FACEBOOK ===\\n\\n<fb post>\\n\\n=== LINKEDIN ===\\n\\n<linkedin post>'",
+      "link_placeholder": "{{ARTICLE_URL}}",
       "platforms": {
         "facebook": {
-          "language": "it", "max_chars": 500, "hashtags_min": 3, "hashtags_max": 5,
-          "tone": "Colloquiale e diretto.",
-          "structure": "Hook + 2-3 righe beneficio + CTA con {{URL_ARTICOLO}} + hashtag"
+          "language": "en", "max_chars": 500, "hashtags_min": 3, "hashtags_max": 5,
+          "tone": "Conversational and direct.",
+          "structure": "Hook + 2-3 lines of benefit + CTA with {{ARTICLE_URL}} + hashtags"
         },
         "linkedin": {
-          "language": "it", "max_chars": 1300, "hashtags_min": 3, "hashtags_max": 5,
-          "tone": "Professionale ma personale, niente clickbait.",
-          "structure": "Hook + punto chiave + takeaway + CTA con {{URL_ARTICOLO}} + hashtag"
+          "language": "en", "max_chars": 1300, "hashtags_min": 3, "hashtags_max": 5,
+          "tone": "Professional but personal, no clickbait.",
+          "structure": "Hook + key point + takeaway + CTA with {{ARTICLE_URL}} + hashtags"
         }
       }
     },
 
     "cover": {
       "element_id":   "00000000-0000-0000-0000-000000000000",
-      "image_model":  "IL_TUO_MODELLO_IMMAGINE",
+      "image_model":  "YOUR_IMAGE_MODEL",
       "image_style":  "cinematic dark background, neon accent lighting, editorial magazine quality, sharp focus",
-      "instructions": "1. Estrai un claim forte dall'angolo editoriale. 2. Inserisci il soggetto con <<<ELEMENT_ID>>> come placeholder. 3. Lascia un terzo dell'immagine libero (zona testo). 4. NON inserire testo nel prompt: lo aggiunge add_caption.py dopo.",
+      "instructions": "1. Extract a strong claim from the editorial angle. 2. Insert the subject using <<<ELEMENT_ID>>> as a placeholder. 3. Leave a third of the image empty (text zone). 4. Do NOT put text in the prompt: add_caption.py adds it afterwards.",
       "zone": "left",
       "gradient": { "color_solid": "#060A1A", "color_edge": "#0F0830", "coverage": 0.52, "easing": "cubic" },
       "text": {
@@ -61,8 +61,8 @@
     },
 
     "sources": {
-      "_comment": "Facoltativo: solo se usi sources.php per un'anagrafica di blog/canali da monitorare",
-      "base_url":       "https://esempio.com",
+      "_comment": "Optional: only needed if you use sources.php for a registry of blogs/channels to monitor",
+      "base_url":       "https://example.com",
       "token":          "api_token",
       "sources_get":    "/cowork/sources.php?action=list",
       "sources_ingest": "/cowork/sources.php?action=ingest",

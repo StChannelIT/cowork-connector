@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Client per un'anagrafica sorgenti da monitorare (blog, creator, canali) — esempio
-dominio editoriale. Parla con `sources.php` (stesso pattern token di core/tasks.php).
+Client for a registry of sources to monitor (blogs, creators, channels) —
+editorial domain example. Talks to `sources.php` (same token pattern as
+core/tasks.php).
 
-Uso:
-  python radar_sources.py list                  # GET sorgenti (tutte)
-  python radar_sources.py list --active         # solo attive
-  python radar_sources.py list --tag ai-video   # filtra per tag
+Usage:
+  python radar_sources.py list                  # GET sources (all)
+  python radar_sources.py list --active         # only active ones
+  python radar_sources.py list --tag ai-video   # filter by tag
   python radar_sources.py ingest sources_payload.json   # POST upsert
 
 Token:
-  - di default usa sources.token dal dominio (in cowork_domains.json);
-  - override con la variabile d'ambiente SOURCES_TOKEN o --token.
+  - by default uses sources.token from the domain (in cowork_domains.json);
+  - override with the SOURCES_TOKEN environment variable or --token.
 """
 import sys, os, json, argparse, urllib.request, urllib.error
 

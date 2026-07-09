@@ -1,15 +1,15 @@
 <?php
 /**
- * sources.php — anagrafica sorgenti da monitorare (esempio dominio editoriale)
+ * sources.php — registry of sources to monitor (editorial domain example)
  * -------------------------------------------------------------------------
- * Rotta opzionale, indipendente da core/tasks.php: tiene un registro di blog,
- * creator, canali da tenere d'occhio per lo scouting di contenuti. Stesso
- * pattern di autenticazione a token di core/tasks.php.
+ * Optional route, independent from core/tasks.php: keeps a registry of
+ * blogs, creators, channels to watch for content scouting. Same
+ * token-authentication pattern as core/tasks.php.
  *
- * Setup: sostituisci AUTH_TOKEN, carica accanto (o dentro) al tuo dominio.
+ * Setup: replace AUTH_TOKEN, upload it next to (or inside) your domain.
  */
 
-const AUTH_TOKEN = 'CAMBIA_QUESTO_TOKEN_LUNGO_E_CASUALE';
+const AUTH_TOKEN = 'CHANGE_THIS_LONG_RANDOM_TOKEN';
 const DB_FILE     = __DIR__ . '/cowork_sources.db';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -72,7 +72,7 @@ try {
         break;
     }
 
-    // Upsert: dedup su "name". Unisce i tags, aggiunge solo i refs nuovi (per url/handle).
+    // Upsert: dedup on "name". Merges tags, only adds new refs (by url/handle).
     case 'ingest': {
         $b = req_body();
         $created = 0; $updated = 0;

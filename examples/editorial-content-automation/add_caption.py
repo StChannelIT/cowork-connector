@@ -1,17 +1,17 @@
 """
-add_caption.py — overlay testo su immagini di cover (esempio dominio editoriale)
-Gradiente elegante + testo garantito dentro la zona.
-Il file output viene nominato dal titolo (slug) se out_path è una cartella o "-".
+add_caption.py — text overlay on cover images (editorial domain example)
+Elegant gradient + text guaranteed to stay inside the zone.
+The output file is named after the title (slug) if out_path is a folder or "-".
 
 Usage: python add_caption.py <img_url_or_path> <title> <subtitle> <out_path_or_dir> [left|right|bottom]
 
-Esempi:
-  python add_caption.py img.jpg "Senza questi 3 file" "Sottotitolo" out/  left
-    -> salva come out/senza-questi-3-file.jpg
-  python add_caption.py img.jpg "Titolo" "Sub" out/custom-name.jpg  left
-    -> salva come out/custom-name.jpg
+Examples:
+  python add_caption.py img.jpg "Without these 3 files" "Subtitle" out/  left
+    -> saves as out/without-these-3-files.jpg
+  python add_caption.py img.jpg "Title" "Sub" out/custom-name.jpg  left
+    -> saves as out/custom-name.jpg
 
-Dipendenze: pip install Pillow
+Dependencies: pip install Pillow
 """
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageStat
 import urllib.request, io, sys, os, re, unicodedata
@@ -22,7 +22,7 @@ subtitle  = sys.argv[3] if len(sys.argv) > 3 else ""
 out_arg   = sys.argv[4]
 zone_hint = sys.argv[5] if len(sys.argv) > 5 else "left"
 
-# -- Slug dal titolo -> nome file --------------------------------------------
+# -- Slug from the title -> file name --------------------------------------------
 def slugify(text):
     text = unicodedata.normalize("NFKD", text)
     text = text.encode("ascii", "ignore").decode("ascii")
@@ -41,7 +41,7 @@ elif not os.path.splitext(out_arg)[1]:
 else:
     out_path = out_arg
 
-# -- Carica immagine ----------------------------------------------------------
+# -- Load image ----------------------------------------------------------
 if img_src.startswith("http"):
     with urllib.request.urlopen(img_src) as r:
         img = Image.open(io.BytesIO(r.read())).convert("RGBA")
@@ -58,7 +58,7 @@ def get_font(size):
                 return ImageFont.truetype(p, size)
     return ImageFont.load_default()
 
-# -- Zona testo fissa -----------------------------------------------------------
+# -- Fixed text zone -----------------------------------------------------------
 PAD = int(W * 0.025)
 
 if zone_hint == "right":
@@ -83,9 +83,9 @@ title_max_w    = zone_x1 - (zone_x0 + IPAD) - IPAD
 subtitle_max_w = int(title_max_w * 0.86)
 
 print(f"Output: {out_path}")
-print(f"Zona: ({zone_x0},{zone_y0})-({zone_x1},{zone_y1}) | title_max_w={title_max_w}px")
+print(f"Zone: ({zone_x0},{zone_y0})-({zone_x1},{zone_y1}) | title_max_w={title_max_w}px")
 
-# -- Gradiente elegante -----------------------------------------------------------
+# -- Elegant gradient -----------------------------------------------------------
 grad_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
 
 def draw_gradient_left(layer, x0, x1):
@@ -109,7 +109,7 @@ elif zone_hint == "right":
 
 img = Image.alpha_composite(img, grad_layer)
 
-# -- Wrapping e font adattivo -------------------------------------------------------
+# -- Wrapping and adaptive font size -------------------------------------------------
 def wrap_text(text, font, max_px_w):
     dummy = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
     words = text.upper().split()
@@ -152,9 +152,9 @@ if best is None:
             wrap_text(subtitle, fs, subtitle_max_w) if subtitle else [], 32, 24)
 
 font_title, title_lines, font_sub, sub_lines, line_h, sub_line_h = best
-print(f"Font: {font_title.size}px | titolo {len(title_lines)} righe | sub {len(sub_lines)} righe")
+print(f"Font: {font_title.size}px | title {len(title_lines)} lines | sub {len(sub_lines)} lines")
 
-# -- Disegna testo ------------------------------------------------------------------
+# -- Draw text ------------------------------------------------------------------
 draw = ImageDraw.Draw(img)
 
 def draw_outlined(draw, pos, text, font, fill=(255,255,255), outline=(0,0,0), ow=4):
@@ -177,9 +177,9 @@ if sub_lines:
                       fill=(255, 200, 50), outline=(0, 0, 0), ow=3)
         y += sub_line_h
 
-# Salva come JPEG se il percorso finisce in .jpg/.jpeg, altrimenti PNG
+# Save as JPEG if the path ends in .jpg/.jpeg, PNG otherwise
 ext = os.path.splitext(out_path)[1].lower()
 fmt = "JPEG" if ext in (".jpg", ".jpeg") else "PNG"
 os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 img.convert("RGB").save(out_path, fmt, quality=88 if fmt == "JPEG" else None, optimize=True)
-print(f"Salvata: {out_path} ({W}x{H}) [{fmt}]")
+print(f"Saved: {out_path} ({W}x{H}) [{fmt}]")

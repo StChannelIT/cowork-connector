@@ -1,0 +1,72 @@
+{
+  "_comment": "[EN version: domain-config-snippet.json] Blocco di esempio da incollare dentro il tuo cowork_domains.json, sotto la chiave del tuo dominio reale. Sostituisci api_url/api_token/UUID/URL con i tuoi valori.",
+
+  "esempio.com": {
+    "api_url":   "https://esempio.com/cowork/tasks.php",
+    "api_token": "INCOLLA_QUI_IL_TUO_TOKEN",
+    "default":   true,
+
+    "content": {
+      "language":       "it",
+      "tone":           "Pratico, diretto, esempi reali, struttura a step con titoli ##. Niente traduzioni letterali, niente repost.",
+      "no_frontmatter": true,
+      "title_max_chars": 70,
+      "research": "Priorita ai contenuti verificati: se la fonte e' povera amplia con ricerca web, non inventare fatti, dati o citazioni."
+    },
+
+    "publish": {
+      "defaults": {
+        "cluster":      1,
+        "access_level": "public",
+        "priority":     1,
+        "status":       "draft",
+        "visible":      true
+      }
+    },
+
+    "social": {
+      "enabled":          true,
+      "deliver_in":       "meta.social_text",
+      "format":           "Stringa unica: '=== FACEBOOK ===\\n\\n<post fb>\\n\\n=== LINKEDIN ===\\n\\n<post linkedin>'",
+      "link_placeholder": "{{URL_ARTICOLO}}",
+      "platforms": {
+        "facebook": {
+          "language": "it", "max_chars": 500, "hashtags_min": 3, "hashtags_max": 5,
+          "tone": "Colloquiale e diretto.",
+          "structure": "Hook + 2-3 righe beneficio + CTA con {{URL_ARTICOLO}} + hashtag"
+        },
+        "linkedin": {
+          "language": "it", "max_chars": 1300, "hashtags_min": 3, "hashtags_max": 5,
+          "tone": "Professionale ma personale, niente clickbait.",
+          "structure": "Hook + punto chiave + takeaway + CTA con {{URL_ARTICOLO}} + hashtag"
+        }
+      }
+    },
+
+    "cover": {
+      "element_id":   "00000000-0000-0000-0000-000000000000",
+      "image_model":  "IL_TUO_MODELLO_IMMAGINE",
+      "image_style":  "cinematic dark background, neon accent lighting, editorial magazine quality, sharp focus",
+      "instructions": "1. Estrai un claim forte dall'angolo editoriale. 2. Inserisci il soggetto con <<<ELEMENT_ID>>> come placeholder. 3. Lascia un terzo dell'immagine libero (zona testo). 4. NON inserire testo nel prompt: lo aggiunge add_caption.py dopo.",
+      "zone": "left",
+      "gradient": { "color_solid": "#060A1A", "color_edge": "#0F0830", "coverage": 0.52, "easing": "cubic" },
+      "text": {
+        "padding_ratio": 0.030, "title_max_size": 80, "subtitle_ratio": 0.86,
+        "title_color": [255, 255, 255], "subtitle_color": [255, 200, 50], "outline_width": 4
+      },
+      "delivery": {
+        "send_captioned_file": true, "method": "base64", "max_bytes": 500000,
+        "jpeg_quality_steps": [85, 75, 65, 55]
+      }
+    },
+
+    "sources": {
+      "_comment": "Facoltativo: solo se usi sources.php per un'anagrafica di blog/canali da monitorare",
+      "base_url":       "https://esempio.com",
+      "token":          "api_token",
+      "sources_get":    "/cowork/sources.php?action=list",
+      "sources_ingest": "/cowork/sources.php?action=ingest",
+      "ingest_source":  "cowork"
+    }
+  }
+}

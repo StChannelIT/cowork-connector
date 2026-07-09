@@ -1,122 +1,129 @@
-# Addendum CLAUDE.md — dominio editoriale (esempio)
+# CLAUDE.md addendum — editorial domain (example)
 
-Da incollare/riassumere nel `CLAUDE.md` del tuo progetto se replichi questo caso
-d'uso. Presuppone che tu abbia già letto `CLAUDE.md` (protocollo generico) e la
-config di dominio in `domain-config-snippet.json`.
+*[🇮🇹 Versione italiana](CLAUDE-addendum.it.md)*
+
+To paste/summarize into your project's `CLAUDE.md` if you're replicating
+this use case. Assumes you've already read `CLAUDE.md` (generic protocol)
+and the domain config in `domain-config-snippet.json`.
 
 ---
 
-## Flusso `generate` / `revise` → articolo + social + cover
+## `generate` / `revise` flow → article + social + cover
 
-1. **Articolo**: scrivi il markdown secondo `{content.language}`, `{content.tone}`,
-   struttura a step con `##`. Se `{content.no_frontmatter}` = true, niente
-   frontmatter YAML.
-2. **Post social** (se `{social.enabled}`): per ogni piattaforma in
-   `{social.platforms}`, un post pronto da pubblicare, rispettando tono/lunghezza/
-   hashtag di quella piattaforma. Usa `{social.link_placeholder}` al posto dell'URL
-   dell'articolo (non ancora noto). Impacchetta secondo `{social.format}` nella
-   chiave `{social.deliver_in}` del `meta`.
-3. **Cover**: genera un'immagine col modello indicato in `{cover.image_model}`,
-   seguendo `{cover.instructions}`; usa `<<<{cover.element_id}>>>` come placeholder
-   del soggetto (mai come testo letterale nel prompt); appendi `{cover.image_style}`.
-   Non inserire testo nel prompt immagine.
-4. **Caption**: aggiungi titolo/sottotitolo con lo script di supporto:
+1. **Article**: write the markdown following `{content.language}`,
+   `{content.tone}`, step-based structure with `##` headings. If
+   `{content.no_frontmatter}` = true, no YAML frontmatter.
+2. **Social posts** (if `{social.enabled}`): for each platform in
+   `{social.platforms}`, a ready-to-publish post, respecting that platform's
+   tone/length/hashtags. Use `{social.link_placeholder}` in place of the
+   article's URL (not yet known). Pack it according to `{social.format}`
+   into the `{social.deliver_in}` key of `meta`.
+3. **Cover**: generate an image with the model given in
+   `{cover.image_model}`, following `{cover.instructions}`; use
+   `<<<{cover.element_id}>>>` as a placeholder for the subject (never as
+   literal text in the prompt); append `{cover.image_style}`. Don't put any
+   text in the image prompt.
+4. **Caption**: add a title/subtitle with the support script:
    ```
-   python add_caption.py <url_o_percorso_immagine> "<titolo>" "<sottotitolo>" <cartella_output/> {cover.zone}
+   python add_caption.py <image_url_or_path> "<title>" "<subtitle>" <output_folder/> {cover.zone}
    ```
-   Parametri visivi da `{cover.gradient}` e `{cover.text}`.
-5. **Chiudi con `complete`**:
+   Visual parameters come from `{cover.gradient}` and `{cover.text}`.
+5. **Close with `complete`**:
    ```json
    {
      "id": <task_id>,
-     "result_md": "<markdown SENZA frontmatter>",
+     "result_md": "<markdown WITHOUT frontmatter>",
      "meta": {
        "title": "...", "description": "...", "tags": [...],
-       "cover_prompt": "...", "cover_image": "<url raw del generatore, riferimento>",
-       "social_text": "<post impacchettati come da social.format>"
+       "cover_prompt": "...", "cover_image": "<generator's raw url, for reference>",
+       "social_text": "<posts packed per social.format>"
      }
    }
    ```
-   Includi anche le chiavi di `{publish.defaults}` dentro `meta` se presenti — sono
-   i default di pubblicazione che l'utente poi rivede a mano.
-6. **Consegna la cover** con `python core/runner_remote.py cover --draft-id <task_id> --file <captioned.jpg>`.
-   ⚠️ Consegna SEMPRE il file **con la caption già applicata** da `add_caption.py`,
-   mai l'immagine grezza del generatore — altrimenti arriva senza testo leggibile.
-   Se il JPEG supera `{cover.delivery.max_bytes}`, ricomprimi provando in sequenza
-   `{cover.delivery.jpeg_quality_steps}`.
+   Also include the `{publish.defaults}` keys inside `meta` if present —
+   they're the publishing defaults the user later reviews by hand.
+6. **Deliver the cover** with
+   `python core/runner_remote.py cover --draft-id <task_id> --file <captioned.jpg>`.
+   ⚠️ ALWAYS deliver the file **with the caption already applied** by
+   `add_caption.py`, never the generator's raw image — otherwise it arrives
+   with no readable text. If the JPEG exceeds `{cover.delivery.max_bytes}`,
+   recompress by trying `{cover.delivery.jpeg_quality_steps}` in sequence.
 
-`revise_policy`: se la bozza ha già una cover e l'istruzione non chiede
-esplicitamente di cambiarla, non rigenerarla — limita l'intervento a testo/meta/social.
+`revise_policy`: if the draft already has a cover and the instruction
+doesn't explicitly ask to change it, don't regenerate it — limit the change
+to text/meta/social.
 
 ---
 
-## Flusso `derive` / `der_revise` → post social da un articolo già pubblicato
+## `derive` / `der_revise` flow → social post from an already-published article
 
-Il `prompt` del task è autosufficiente: contiene il profilo di voce, l'articolo
-sorgente, il formato richiesto (`content_json`) e `id`/`derivative_id` da usare in
-chiusura.
+The task's `prompt` is self-sufficient: it contains the voice profile, the
+source article, the requested format (`content_json`), and the `id`/
+`derivative_id` to use when closing it.
 
-1. Scrivi lo script nativo per la piattaforma target (non un riassunto piatto).
-2. Prepara `content_md` (leggibile, senza frontmatter) e `content_json` (struttura
-   richiesta, es. `{caption, hashtags, cta}`).
-3. Chiudi:
+1. Write the native script for the target platform (not a flat summary).
+2. Prepare `content_md` (readable, no frontmatter) and `content_json` (the
+   requested structure, e.g. `{caption, hashtags, cta}`).
+3. Close:
    ```
    python core/runner_remote.py derive-complete --id <id> --der-id <derivative_id> --payload payload.json
    ```
 
 ---
 
-## Flusso `voice` → diario di voce
+## `voice` flow → voice profile
 
-Genera/aggiorna un profilo editoriale (tono, lessico da usare/evitare, struttura
-preferita, esempi, do & don't), in markdown, coerente con esempi/feedback ricevuti.
+Generate/update an editorial profile (tone, vocabulary to use/avoid,
+preferred structure, examples, do & don't), in markdown, consistent with the
+examples/feedback received.
 
 ```
 python core/runner_remote.py voice-complete --id <id> --scope global --mode seed --payload payload.json
 ```
 ```json
-{ "id": <id>, "scope": "global", "mode": "seed", "profile_md": "<diario in markdown>" }
+{ "id": <id>, "scope": "global", "mode": "seed", "profile_md": "<profile in markdown>" }
 ```
 
-I task `generate` successivi lo useranno automaticamente se il `prompt` lo include
-(va recuperato lato client, es. da un tuo script che compone il prompt prima di
-mandarlo in coda con `add`).
+Subsequent `generate` tasks will use it automatically if the `prompt`
+includes it (this must be fetched client-side, e.g. by a script of yours
+that composes the prompt before queuing it with `add`).
 
 ---
 
-## Flusso `asset` → immagini/video reali da uno script approvato
+## `asset` flow → real images/video from an approved script
 
-Genera gli asset (stesso modello/placeholder del passo cover) e chiudi con:
+Generate the assets (same model/placeholder as the cover step) and close
+with:
 ```
 python core/runner_remote.py asset-complete --id <id> --der-id <derivative_id> --payload payload.json
 ```
 
 ---
 
-## Flusso `scout` → candidati per la redazione
+## `scout` flow → candidates for the editorial team
 
-Cerca argomenti/fonti secondo il `prompt`, poi:
+Search for topics/sources according to the `prompt`, then:
 ```json
 {
   "job_id": <id>,
   "candidates": [
     { "source_title": "...", "source_url": "...", "topic": "...", "score": 0-100,
-      "score_reason": "...", "angle": "angolo editoriale", "target": "tutorial|blog" }
+      "score_reason": "...", "angle": "editorial angle", "target": "tutorial|blog" }
   ]
 }
 ```
-chiuso con `ingest` (vedi `CLAUDE.md` principale, sezione 3.2).
+closed with `ingest` (see the main `CLAUDE.md`, section 3.2).
 
 ---
 
-## Anagrafica sorgenti da monitorare (facoltativo)
+## Registry of sources to monitor (optional)
 
-Se usi `sources.php` + `radar_sources.py`:
+If you use `sources.php` + `radar_sources.py`:
 ```
-python radar_sources.py list                       # elenco sorgenti
+python radar_sources.py list                       # list of sources
 python radar_sources.py list --active --tag ai-video
-python radar_sources.py ingest sources_payload.json # upsert, dedup su "name"
+python radar_sources.py ingest sources_payload.json # upsert, dedup on "name"
 ```
-Raggruppa TUTTI i riferimenti (blog + canali social) della stessa persona/brand
-sotto un unico `name`; l'upsert aggiorna i campi, unisce i `tags` e aggiunge solo i
-`refs` nuovi.
+Group ALL references (blog + social channels) of the same
+person/brand under a single `name`; the upsert updates the fields, merges
+the `tags`, and only adds new `refs`.
