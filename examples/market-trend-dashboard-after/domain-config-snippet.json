@@ -1,0 +1,14 @@
+{
+  "_comment": "Example block to paste into your cowork_domains.json, under your own domain key. Replace api_url/api_token with your real values.",
+
+  "market-trend-dashboard": {
+    "api_url":   "https://yoursite.com/path/to/market-trend-dashboard-after/tasks.php",
+    "api_token": "PASTE_YOUR_TOKEN_HERE",
+    "default":   false,
+
+    "content": {
+      "language": "it",
+      "notes": "Dashboard di trend crypto/social. Un solo action_type: market_trend, vedi CLAUDE-addendum.md per come eseguirlo e chiuderlo."
+    }
+  }
+}
