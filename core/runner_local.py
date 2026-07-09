@@ -1,35 +1,37 @@
 #!/usr/bin/env python3
 """
-runner_local.py — Cowork Connector: coda LOCALE (zero deploy)
+runner_local.py — Cowork Connector: LOCAL queue (zero deploy)
 ================================================================
-Backend alternativo a core/tasks.php + core/runner_remote.py, per connessioni
-che non hanno bisogno di un server esterno: la coda vive in un file SQLite
-dentro il progetto Cowork stesso. Nessun hosting, nessun token, nessuna
-richiesta di rete — solo libreria standard Python.
+Alternative backend to core/tasks.php + core/runner_remote.py, for
+connections that don't need an external server: the queue lives in a SQLite
+file inside the Cowork project itself. No hosting, no token, no network
+calls — standard library only.
 
-Usalo quando il lavoro è "interno" a Cowork (ricerche web, file, documenti,
-skill) e nessun sistema esterno ha bisogno di scrivere task da solo. Se invece
-un sito/CMS/altro tool deve poter mettere in coda un task per conto suo, serve
-il backend remoto (core/tasks.php) — vedi CLAUDE.md, sezione "Fase 2".
+Use it when the work is "internal" to Cowork (web research, files,
+documents, skills) and no external system needs to write tasks on its own.
+If instead a website/CMS/other tool needs to be able to queue a task on its
+own, you need the remote backend (core/tasks.php) — see CLAUDE.md, "Phase 2"
+section.
 
-Convenzione consigliata: un database per connessione, in
-`connections/<nome-connessione>/queue.db` (usa --connection per puntarci senza
-scrivere il percorso a mano). In alternativa --db <percorso> per un file custom.
+Recommended convention: one database per connection, in
+`connections/<connection-name>/queue.db` (use --connection to point at it
+without typing the path by hand). Alternatively --db <path> for a custom
+file.
 
-Comandi:
-  init            [--db path | --connection nome]
+Commands:
+  init            [--db path | --connection name]
   add             --prompt "..." [--action-type t] [--folder f] [--params '{...}']
-                  [--priority N] [--max-attempts N] [--db path | --connection nome]
-  next            [--limit N] [--db path | --connection nome]
-  list            [--status s] [--db path | --connection nome]
-  stats           [--db path | --connection nome]
-  complete        --id N --log "esito" [--db path | --connection nome]
-  fail            --id N --error "motivo" [--db path | --connection nome]
-  reset           --id N [--db path | --connection nome]
+                  [--priority N] [--max-attempts N] [--db path | --connection name]
+  next            [--limit N] [--db path | --connection name]
+  list            [--status s] [--db path | --connection name]
+  stats           [--db path | --connection name]
+  complete        --id N --log "outcome" [--db path | --connection name]
+  fail            --id N --error "reason" [--db path | --connection name]
+  reset           --id N [--db path | --connection name]
 
-Nota OneDrive/Drive: se la cartella di progetto è sincronizzata (OneDrive,
-Google Drive...), il DB usa journal_mode=TRUNCATE invece di WAL — WAL non è
-affidabile su filesystem di rete/sincronizzati.
+OneDrive/Drive note: if the project folder is synced (OneDrive, Google
+Drive...), the DB uses journal_mode=TRUNCATE instead of WAL — WAL isn't
+reliable on network/synced filesystems.
 """
 
 import argparse
@@ -39,7 +41,7 @@ import pathlib
 import sqlite3
 import sys
 
-HERE = pathlib.Path(__file__).parent.parent  # radice del progetto (accanto a core/)
+HERE = pathlib.Path(__file__).parent.parent  # project root (next to core/)
 
 
 def _resolve_db(a):
@@ -49,7 +51,7 @@ def _resolve_db(a):
         d = HERE / "connections" / a.connection
         d.mkdir(parents=True, exist_ok=True)
         return d / "queue.db"
-    # default: un'unica coda locale generica nella radice del progetto
+    # default: a single generic local queue at the project root
     return HERE / "cowork_local_queue.db"
 
 
@@ -57,7 +59,7 @@ def _connect(db_path):
     db_path = pathlib.Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(db_path)
-    con.execute("PRAGMA journal_mode=TRUNCATE;")  # affidabile su cartelle sincronizzate
+    con.execute("PRAGMA journal_mode=TRUNCATE;")  # reliable on synced folders
     con.execute("""CREATE TABLE IF NOT EXISTS tasks (
         id            INTEGER PRIMARY KEY AUTOINCREMENT,
         prompt        TEXT    NOT NULL,
@@ -84,13 +86,13 @@ def now_iso():
 
 
 # ---------------------------------------------------------------------------
-# Comandi
+# Commands
 # ---------------------------------------------------------------------------
 
 def cmd_init(a):
     db = _resolve_db(a)
     _connect(db)
-    print(f"OK: coda inizializzata in {db}")
+    print(f"OK: queue initialized at {db}")
 
 
 def cmd_add(a):
@@ -107,7 +109,7 @@ def cmd_add(a):
     try:
         json.loads(params)
     except json.JSONDecodeError as e:
-        print(f"ERRORE: --params non è JSON valido: {e}", file=sys.stderr)
+        print(f"ERROR: --params is not valid JSON: {e}", file=sys.stderr)
         sys.exit(2)
     cur = con.execute(
         """INSERT INTO tasks (prompt, target_folder, action_type, params, priority, max_attempts, status, created_at)
@@ -212,48 +214,48 @@ def cmd_reset(a):
 # ---------------------------------------------------------------------------
 
 def _add_db_args(p):
-    p.add_argument("--db", default=None, help="Percorso file .db custom")
-    p.add_argument("--connection", default=None, help="Nome connessione: usa connections/<nome>/queue.db")
+    p.add_argument("--db", default=None, help="Custom .db file path")
+    p.add_argument("--connection", default=None, help="Connection name: uses connections/<name>/queue.db")
 
 
 def build_parser():
-    p = argparse.ArgumentParser(description="Cowork Connector — coda locale (zero deploy).")
+    p = argparse.ArgumentParser(description="Cowork Connector — local queue (zero deploy).")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    i = sub.add_parser("init", help="Crea/inizializza il DB della coda")
+    i = sub.add_parser("init", help="Create/initialize the queue DB")
     _add_db_args(i); i.set_defaults(func=cmd_init)
 
-    ad = sub.add_parser("add", help="Aggiunge un task alla coda")
+    ad = sub.add_parser("add", help="Add a task to the queue")
     ad.add_argument("--prompt", required=True)
     ad.add_argument("--action-type", dest="action_type", default="mixed")
     ad.add_argument("--folder", dest="target_folder", default=None)
-    ad.add_argument("--params", default=None, help="JSON inline o percorso file")
+    ad.add_argument("--params", default=None, help="Inline JSON or file path")
     ad.add_argument("--priority", type=int, default=5)
     ad.add_argument("--max-attempts", type=int, default=1, dest="max_attempts")
     _add_db_args(ad); ad.set_defaults(func=cmd_add)
 
-    n = sub.add_parser("next", help="Preleva i task pending (claim atomico)")
+    n = sub.add_parser("next", help="Claim pending tasks (atomic claim)")
     n.add_argument("--limit", type=int, default=5)
     _add_db_args(n); n.set_defaults(func=cmd_next)
 
-    l = sub.add_parser("list", help="Elenco task")
+    l = sub.add_parser("list", help="List tasks")
     l.add_argument("--status", default=None)
     _add_db_args(l); l.set_defaults(func=cmd_list)
 
-    st = sub.add_parser("stats", help="Conteggio per stato")
+    st = sub.add_parser("stats", help="Count by status")
     _add_db_args(st); st.set_defaults(func=cmd_stats)
 
-    c = sub.add_parser("complete", help="Chiude un task con esito positivo")
+    c = sub.add_parser("complete", help="Close a task with a positive outcome")
     c.add_argument("--id", type=int, required=True)
     c.add_argument("--log", default="")
     _add_db_args(c); c.set_defaults(func=cmd_complete)
 
-    f = sub.add_parser("fail", help="Segna un task come fallito (retry se restano tentativi)")
+    f = sub.add_parser("fail", help="Mark a task as failed (retry if attempts remain)")
     f.add_argument("--id", type=int, required=True)
-    f.add_argument("--error", default="errore non specificato")
+    f.add_argument("--error", default="unspecified error")
     _add_db_args(f); f.set_defaults(func=cmd_fail)
 
-    r = sub.add_parser("reset", help="Rimette un task in pending")
+    r = sub.add_parser("reset", help="Put a task back to pending")
     r.add_argument("--id", type=int, required=True)
     _add_db_args(r); r.set_defaults(func=cmd_reset)
 

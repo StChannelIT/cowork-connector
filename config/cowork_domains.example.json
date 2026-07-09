@@ -1,25 +1,25 @@
 {
-  "_comment": "Copia questo file in cowork_domains.json (nella radice del progetto, FUORI da git) e compilalo con i tuoi dati reali. Ogni chiave di primo livello = un dominio/progetto. Puoi averne più di uno; quello con default:true è usato quando non passi --domain.",
+  "_comment": "[IT version: cowork_domains.example.it.json] Copy this file to cowork_domains.json (at the project root, OUTSIDE git) and fill it in with your real data. Each top-level key = one domain/project. You can have more than one; the one with default:true is used when you don't pass --domain.",
 
   "_schema": {
-    "api_url":       "URL di core/tasks.php sul tuo server, SENZA querystring (es. https://tuosito.it/cowork/tasks.php)",
-    "api_token":      "Lo stesso token che hai messo in AUTH_TOKEN dentro core/tasks.php",
-    "default":        "true = questo dominio è usato se non specifichi --domain",
+    "api_url":       "URL of core/tasks.php on your server, WITHOUT querystring (e.g. https://yoursite.com/cowork/tasks.php)",
+    "api_token":      "The same token you put in AUTH_TOKEN inside core/tasks.php",
+    "default":        "true = this domain is used if you don't specify --domain",
     "content": {
-      "_comment": "Sezione libera: qui ci metti le convenzioni della TUA automazione (lingua, tono, formati, regole). CLAUDE.md la legge e la applica: non è uno schema fisso, adattala al tuo caso.",
-      "language": "es. it",
-      "notes":    "es. istruzioni libere che vuoi che Claude rispetti sempre per questo dominio"
+      "_comment": "Free-form section: put here the conventions of YOUR automation (language, tone, formats, rules). CLAUDE.md reads and applies it: it's not a fixed schema, adapt it to your case.",
+      "language": "e.g. en",
+      "notes":    "e.g. free-form instructions you want Claude to always follow for this domain"
     }
   },
 
-  "esempio.com": {
-    "api_url":   "https://esempio.com/cowork/tasks.php",
-    "api_token": "INCOLLA_QUI_IL_TUO_TOKEN",
+  "example.com": {
+    "api_url":   "https://example.com/cowork/tasks.php",
+    "api_token": "PASTE_YOUR_TOKEN_HERE",
     "default":   true,
 
     "content": {
-      "language": "it",
-      "notes": "Esempio minimo: descrivi qui in linguaggio naturale come vuoi che Claude si comporti per i task di questo dominio."
+      "language": "en",
+      "notes": "Minimal example: describe here, in natural language, how you want Claude to behave for this domain's tasks."
     }
   }
 }

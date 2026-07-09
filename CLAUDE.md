@@ -1,199 +1,213 @@
-# Cowork Connector — Istruzioni di progetto
+# Cowork Connector — Project Instructions
 
-## 0. Cos'è, in una frase
+*[🇮🇹 Versione italiana](CLAUDE.it.md)*
 
-Il problema che risolve: automatizzare un progetto (un sito, un'app, un tuo
-processo) di solito significa dargli una **chiave API a pagamento** (OpenAI,
-Anthropic API, ecc.) da consumare a token. Questo connettore sostituisce quella
-chiave con una **coda**: il progetto esterno (o tu a mano) ci scrive dentro cosa
-va fatto, e il **tuo abbonamento Cowork** — già pagato, non a consumo — la legge
-a intervalli e la esegue con tutti gli strumenti che Claude ha in sessione (file,
-web, skill, connettori MCP). Dal punto di vista del progetto esterno, l'endpoint
-della coda (URL + token) **si comporta come una API key**: la usi dove altrimenti
-avresti incollato una chiave a pagamento. Dietro, però, non c'è consumo a token:
-c'è una sessione Cowork schedulata.
+## 0. What it is, in one sentence
 
-> Non esiste uno script "wizard" separato: **il wizard sei tu, Claude**, seguendo
-> la sezione 2 qui sotto. Chi apre questo progetto e ti chiede di "collegare"/
-> "connettere" qualcosa va guidato in conversazione, una domanda alla volta.
+The problem it solves: automating a project (a website, an app, a process of
+yours) usually means giving it a **paid API key** (OpenAI, Anthropic API,
+etc.) to consume by the token. This connector replaces that key with a
+**queue**: the external project (or you, by hand) writes into it what needs
+to be done, and your **Cowork subscription** — already paid for, not
+metered — reads it at intervals and executes it with every tool Claude has
+in session (files, web, skills, MCP connectors). From the external project's
+point of view, the queue's endpoint (URL + token) **behaves like an API
+key**: you use it wherever you'd otherwise have pasted a paid key. Behind it,
+though, there's no token consumption: there's a scheduled Cowork session.
+
+> There is no separate "wizard" script: **you, Claude, are the wizard**,
+> following section 2 below. Whoever opens this project and asks you to
+> "connect"/"link" something should be guided in conversation, one question
+> at a time.
 
 ---
 
-## 1. File principali
+## 1. Main files
 
-| File | Ruolo |
+| File | Role |
 |---|---|
-| `core/runner_local.py` | Client per coda **locale** (SQLite nel progetto, zero deploy). |
-| `core/runner_remote.py` | Client per coda **remota** (parla con `core/tasks.php` su un server esterno). |
-| `core/tasks.php` | Rotta API da deployare sul server esterno, se la connessione lo richiede. |
-| `cowork_domains.json` | Config reale (URL, token) delle connessioni **remote**. Non è nel repo — la crei durante il setup, resta fuori da git. |
-| `config/cowork_domains.example.json` | Schema commentato + esempio, da copiare e compilare. |
-| `connections/<nome>/` | Una cartella per ogni connessione attiva: `NOTES.md` (cosa fa, che `action_type` usa) + `queue.db` se il backend è locale. Vedi `connections/README.md`. |
+| `core/runner_local.py` | Client for the **local** queue (SQLite in the project, zero deploy). |
+| `core/runner_remote.py` | Client for the **remote** queue (talks to `core/tasks.php` on an external server). |
+| `core/tasks.php` | API route to deploy on the external server, if the connection requires it. |
+| `cowork_domains.json` | Real config (URL, token) for **remote** connections. Not in the repo — you create it during setup, it stays out of git. |
+| `config/cowork_domains.example.json` | Commented schema + example, to copy and fill in. |
+| `connections/<name>/` | One folder per active connection: `NOTES.md` (what it does, which `action_type` it uses) + `queue.db` if the backend is local. See `connections/README.md`. |
 
 ---
 
-## 2. Wizard di connessione (4 fasi)
+## 2. Connection wizard (4 phases)
 
-Attiva questa procedura quando l'utente chiede di collegare/automatizzare
-qualcosa di nuovo, o quando non esiste ancora nessuna connessione configurata.
-Fai le domande **una alla volta**, non tutte insieme. Non serve rifare tutto da
-capo per una connessione già esistente: in quel caso vai alla sezione 3 (ciclo
-di esecuzione) per quella connessione.
+Trigger this procedure when the user asks to connect/automate something new,
+or when no connection is configured yet. Ask questions **one at a time**, not
+all together. There's no need to redo everything from scratch for a
+connection that already exists: in that case, go to section 3 (execution
+cycle) for that connection.
 
-### Fase 1 — Connessione al progetto desiderato
+### Phase 1 — Connecting to the desired project
 
-Capisci cosa l'utente vuole automatizzare, prima di parlare di coda o server:
+Understand what the user wants to automate, before talking about queues or
+servers:
 
-1. **Che progetto/servizio è?** Un sito, un'app, un CMS, dei file locali, un tuo
-   processo interno (ricerche, report, monitoraggio)?
-2. **Quel progetto ha già un modo per "ricevere ordini" dall'esterno?**
-   - Un'API propria, un DB a cui hai accesso, un connettore MCP già collegato in
-     questa sessione Cowork? → **Forse non ti serve nemmeno una coda**: se Cowork
-     può già raggiungere quel sistema direttamente (bash con accesso di rete,
-     MCP), valuta di eseguire l'azione a ogni ciclo schedulato senza passare da
-     un livello di coda intermedio. Salta alla Fase 3.
-   - Niente di tutto ciò, o l'utente preferisce disaccoppiare (il progetto
-     esterno non deve sapere *quando* o *come* viene eseguito il lavoro, solo
-     *che* è stato richiesto)? → serve una coda. Vai alla Fase 2.
-3. **Se il progetto esterno si aspetta "una chiave API"** (es. un plugin/form che
-   ha un campo "API key" o "webhook URL" da compilare): qui il connettore
-   fornisce l'equivalente — un URL + un token che quel progetto userà per
-   scrivere richieste in coda (`POST ?action=add`), esattamente come userebbe una
-   API a pagamento. Serve quindi il backend **remoto** (Fase 2). Nota: questo
-   repo non include un emulatore di API specifiche (es. non finge di essere
-   l'endpoint OpenAI) — fornisce un endpoint proprio, token-protetto, a cui il
-   progetto esterno si collega. Se un giorno serve emulare una API di terze
-   parti, è un'estensione di `core/tasks.php` da valutare caso per caso.
+1. **What project/service is it?** A website, an app, a CMS, local files, an
+   internal process of theirs (research, reports, monitoring)?
+2. **Does that project already have a way to "receive orders" from the
+   outside?**
+   - An API of its own, a database you have access to, an MCP connector
+     already linked in this Cowork session? → **You may not even need a
+     queue**: if Cowork can already reach that system directly (bash with
+     full network access, MCP), consider running the action on every
+     scheduled cycle without going through an intermediate queue layer. Skip
+     to Phase 3.
+   - None of that, or the user prefers to decouple (the external project
+     doesn't need to know *when* or *how* the work gets executed, only
+     *that* it was requested)? → a queue is needed. Go to Phase 2.
+3. **If the external project expects "an API key"** (e.g. a plugin/form that
+   has an "API key" or "webhook URL" field to fill in): here the connector
+   provides the equivalent — a URL + a token that project will use to write
+   requests into the queue (`POST ?action=add`), exactly as it would use a
+   paid API. This requires the **remote** backend (Phase 2). Note: this repo
+   doesn't include an emulator for specific APIs (e.g. it doesn't pretend to
+   be the OpenAI endpoint) — it provides its own token-protected endpoint,
+   which the external project connects to. If one day you need to emulate a
+   third-party API, that's an extension of `core/tasks.php` to evaluate case
+   by case.
 
-### Fase 2 — Dove vive la coda, come si alimenta, quali file servono
+### Phase 2 — Where the queue lives, how it gets fed, which files are needed
 
-Due backend, scegli in base a dove deve essere raggiungibile la coda:
+Two backends, choose based on where the queue needs to be reachable:
 
-| Backend | Quando usarlo | File coinvolti | Come si alimenta |
+| Backend | When to use it | Files involved | How it's fed |
 |---|---|---|---|
-| **Locale** | Il lavoro è interno a Cowork (ricerche, file, contenuti): nessun sistema esterno deve scrivere nella coda da solo | `core/runner_local.py`, DB SQLite in `connections/<nome>/queue.db` | Tu (o un'altra automazione locale) chiami `add`; zero deploy, zero token/URL da gestire |
-| **Remoto** | Un sistema esterno deve poter scrivere task da solo (form, CMS, webhook), oppure la coda deve essere raggiungibile da fuori Cowork | `core/tasks.php` (server esterno) + `core/runner_remote.py` | Il sistema esterno chiama `POST ?action=add` col token — o lo fai tu a mano/da script |
+| **Local** | The work is internal to Cowork (research, files, content): no external system needs to write to the queue on its own | `core/runner_local.py`, SQLite DB in `connections/<name>/queue.db` | You (or another local automation) call `add`; zero deploy, zero tokens/URLs to manage |
+| **Remote** | An external system needs to write tasks on its own (form, CMS, webhook), or the queue needs to be reachable from outside Cowork | `core/tasks.php` (external server) + `core/runner_remote.py` | The external system calls `POST ?action=add` with the token — or you do it by hand/from a script |
 
-Passi:
+Steps:
 
-1. **Fai scegliere il backend** con la tabella sopra (fai la domanda esplicita se
-   non è ovvio dal contesto della Fase 1).
-2. **Locale**:
+1. **Have the backend chosen** using the table above (ask explicitly if
+   it isn't obvious from the Phase 1 context).
+2. **Local**:
    ```
-   python core/runner_local.py init --connection <nome>
+   python core/runner_local.py init --connection <name>
    ```
-   Crea `connections/<nome>/queue.db`. Fine del setup lato coda.
-3. **Remoto**:
-   - Verifica che l'utente abbia un server PHP 7.4+ con `pdo_sqlite` disponibile
-     (hosting condiviso va bene). Se non ce l'ha, spiegaglielo prima di andare
-     oltre.
-   - Genera con lui un token lungo e casuale (32+ caratteri), da incollare al
-     posto di `AUTH_TOKEN` in `core/tasks.php` prima di caricarlo sul server.
-   - Chiedi l'URL a cui sarà raggiungibile (es. `https://tuosito.it/cowork/tasks.php`).
-   - Scrivi/aggiorna `cowork_domains.json` (copiando lo schema da
-     `config/cowork_domains.example.json`) con una chiave per questa connessione:
-     `api_url`, `api_token`, `default` solo se è l'unica/principale.
-   - Testa: `python core/runner_remote.py stats --domain <nome>` deve rispondere
-     con un JSON di conteggi. HTTP 401 → token non combacia. Errore di rete →
-     controlla URL e che `tasks.php` sia stato caricato correttamente.
-4. **In entrambi i casi**, crea `connections/<nome>/NOTES.md` (vedi
-   `connections/README.md` per il formato) — lo riempi alla Fase 3.
-5. **Metti in coda un task di prova** e verifica che torni da `next`:
+   Creates `connections/<name>/queue.db`. End of queue-side setup.
+3. **Remote**:
+   - Verify the user has a PHP 7.4+ server with `pdo_sqlite` available
+     (shared hosting is fine). If they don't, explain that before going
+     further.
+   - Generate with them a long, random token (32+ characters), to paste in
+     place of `AUTH_TOKEN` in `core/tasks.php` before uploading it to the
+     server.
+   - Ask for the URL it will be reachable at (e.g.
+     `https://yoursite.com/cowork/tasks.php`).
+   - Write/update `cowork_domains.json` (copying the schema from
+     `config/cowork_domains.example.json`) with one key for this
+     connection: `api_url`, `api_token`, `default` only if it's the
+     only/main one.
+   - Test: `python core/runner_remote.py stats --domain <name>` should
+     respond with a JSON of counts. HTTP 401 → token mismatch. Network
+     error → check the URL and that `tasks.php` was uploaded correctly.
+4. **In both cases**, create `connections/<name>/NOTES.md` (see
+   `connections/README.md` for the format) — you fill it in during Phase 3.
+5. **Queue a test task** and verify it comes back from `next`:
    ```
-   python core/runner_local.py add --connection <nome> --prompt "Rispondi solo con 'ok, connessione attiva'"
-   python core/runner_local.py next --connection <nome> --limit 1
+   python core/runner_local.py add --connection <name> --prompt "Reply only with 'ok, connection active'"
+   python core/runner_local.py next --connection <name> --limit 1
    ```
-   (sostituisci con `runner_remote.py ... --domain <nome>` se backend remoto).
+   (replace with `runner_remote.py ... --domain <name>` for the remote
+   backend).
 
-### Fase 3 — Definizione delle attività (`action_type`) per questa connessione
+### Phase 3 — Defining the tasks (`action_type`) for this connection
 
-Per la connessione appena creata, decidi insieme all'utente:
+For the connection just created, decide together with the user:
 
-1. **Che tipi di lavoro** passeranno da questa coda? Dai un nome breve a ognuno
-   (`action_type`, es. `generate`, `sync`, `check`, `report` — libero, deciso qui,
-   non fissato dal motore).
-2. **Come si chiude** ogni tipo: per il backend locale c'è solo `complete --log`/
-   `fail --error`. Per il backend remoto sono disponibili anche `complete` (con
-   `result_md`/`meta` strutturati), `derive-complete`, `voice-complete`,
-   `asset-complete`, `cover`, `ingest` — usa quelli utili al caso, ignora gli
-   altri (dettagli e payload in `core/tasks.php`, commentato).
-3. **Scrivi tutto in `connections/<nome>/NOTES.md`**: 10-20 righe con l'elenco
-   `action_type` → come chiuderlo → eventuali regole fisse (lingua, tono,
-   vincoli). Il dettaglio di *cosa fare* resta nel `prompt` di ogni task, non va
-   duplicato qui.
-4. Se il caso è corposo (più passi, esempi, config elaborata), valuta una
-   cartella dedicata sotto `examples/` come riferimento futuro — vedi
-   `examples/editorial-content-automation/` per un caso reale completo.
+1. **What kinds of work** will flow through this queue? Give each a short
+   name (`action_type`, e.g. `generate`, `sync`, `check`, `report` —
+   free-form, decided here, not fixed by the engine).
+2. **How each type is closed**: for the local backend there's only
+   `complete --log`/`fail --error`. For the remote backend, `complete`
+   (with structured `result_md`/`meta`), `derive-complete`,
+   `voice-complete`, `asset-complete`, `cover`, `ingest` are also available —
+   use whichever are useful for the case, ignore the rest (details and
+   payloads are in `core/tasks.php`, commented).
+3. **Write it all in `connections/<name>/NOTES.md`**: 10-20 lines listing
+   `action_type` → how to close it → any fixed rules (language, tone,
+   constraints). The detail of *what to do* stays in each task's `prompt`,
+   it shouldn't be duplicated here.
+4. If the case is substantial (multiple steps, examples, elaborate config),
+   consider a dedicated folder under `examples/` as a future reference —
+   see `examples/editorial-content-automation/` for a complete real case.
 
-### Fase 4 — Task schedulato: ogni quanto controllare, e come non sprecare token
+### Phase 4 — Scheduled task: how often to check, and how not to waste tokens
 
-Proponi il task ricorrente con la skill `schedule`. Due cose da decidere insieme
-all'utente e da rispettare rigorosamente nel prompt schedulato:
+Propose the recurring task with the `schedule` skill. Two things to decide
+together with the user and to strictly follow in the scheduled prompt:
 
-**Frequenza consigliata**: ogni 15-30 minuti per code leggere/non urgenti; ogni
-5-10 minuti se serve reattività. Evita sotto i 5 minuti — l'avvio di ogni sessione
-schedulata ha un costo indipendente dal fatto che ci sia lavoro o meno, quindi
-troppa frequenza spreca token anche a coda vuota.
+**Recommended frequency**: every 15-30 minutes for light/non-urgent queues;
+every 5-10 minutes if responsiveness is needed. Avoid going under 5 minutes —
+starting each scheduled session has a cost independent of whether there's
+work to do or not, so too much frequency wastes tokens even on an empty
+queue.
 
-**Algoritmo essenziale del prompt schedulato — in quest'ordine, senza eccezioni**:
+**Essential algorithm for the scheduled prompt — in this order, no
+exceptions**:
 ```
-1. Controllo leggero: `stats` (locale o remoto, a seconda della connessione).
-2. Coda vuota (nessun pending)?
-   → Scrivi una riga ("Nessuna attività in coda.") e TERMINA SUBITO.
-     Non fare altro: niente esplorazioni, niente riepiloghi lunghi, niente
-     controlli aggiuntivi "tanto per".
-3. Coda non vuota?
-   → SOLO ORA esegui `next --limit N` e lavora i task secondo le regole in
-     `connections/<nome>/NOTES.md` (Fase 3).
-4. Chiudi ogni task (complete/fail o l'azione di chiusura specifica).
-5. Riepilogo breve: quanti done, quanti error, quanti restano pending.
+1. Light check: `stats` (local or remote, depending on the connection).
+2. Queue empty (no pending)?
+   → Write one line ("No pending tasks.") and STOP IMMEDIATELY.
+     Do nothing else: no exploring, no long summaries, no extra
+     "just in case" checks.
+3. Queue not empty?
+   → ONLY NOW run `next --limit N` and work the tasks according to the
+     rules in `connections/<name>/NOTES.md` (Phase 3).
+4. Close every task (complete/fail or the specific closing action).
+5. Short summary: how many done, how many error, how many remain pending.
 ```
-Il punto critico è il passo 2: un controllo a vuoto deve costare il minimo
-indispensabile (una sola chiamata leggera, un output di una riga). Non trasformare
-mai un "non c'è niente da fare" in un'esplorazione o in un report.
+The critical point is step 2: an empty check must cost the bare minimum (one
+light call, a one-line output). Never turn "there's nothing to do" into an
+exploration or a report.
 
-Se ci sono **più connessioni attive**, il task schedulato può controllarle tutte
-in sequenza (ripeti l'algoritmo per ognuna) oppure avere un task schedulato per
-connessione, se hanno frequenze diverse — decidilo con l'utente in base a quanto
-sono eterogenee.
+If there are **several active connections**, the scheduled task can check
+them all in sequence (repeat the algorithm for each) or have one scheduled
+task per connection, if they have different frequencies — decide this with
+the user based on how heterogeneous they are.
 
 ---
 
-## 3. Regole d'oro per l'esecuzione
+## 3. Golden rules for execution
 
-- **Non inventare lavoro**: esegui solo i task restituiti da `next`.
-- Ogni task preso da `next` va chiuso, sempre — con l'azione di successo
-  **oppure** `fail`. Un task mai chiuso resta bloccato in `running`.
-- Se un task non specifica abbastanza per essere eseguito con sicurezza, chiudilo
-  con `fail` spiegando cosa manca, invece di indovinare.
-- Non chiedere conferme durante il ciclo schedulato: lavora in autonomia secondo
-  quanto concordato in `connections/<nome>/NOTES.md`.
+- **Don't invent work**: only execute tasks returned by `next`.
+- Every task taken from `next` must be closed, always — with the success
+  action **or** `fail`. A task never closed stays stuck in `running`.
+- If a task doesn't specify enough to be executed safely, close it with
+  `fail` explaining what's missing, instead of guessing.
+- Don't ask for confirmation during the scheduled cycle: work autonomously
+  according to what was agreed in `connections/<name>/NOTES.md`.
 
 ---
 
-## 4. Protocollo di dettaglio (backend remoto)
+## 4. Detailed protocol (remote backend)
 
-Solo per connessioni con backend **remoto**. Per il backend locale, `complete`/
-`fail` bastano quasi sempre (vedi Fase 3).
+Only for connections with the **remote** backend. For the local backend,
+`complete`/`fail` are almost always enough (see Phase 3).
 
 ### 4.1 `generate` / `revise` → `complete`
 ```
-python core/runner_remote.py complete --id <ID> --payload payload.json --domain <nome>
+python core/runner_remote.py complete --id <ID> --payload payload.json --domain <name>
 ```
 ```json
-{ "id": <ID>, "result_md": "<esito in markdown o testo libero>", "meta": { "...": "..." } }
+{ "id": <ID>, "result_md": "<outcome in markdown or free text>", "meta": { "...": "..." } }
 ```
 
 ### 4.2 `scout` → `ingest`
 ```json
-{ "job_id": <ID>, "candidates": [ { "source_title": "...", "score": 0-100, "...": "campi liberi" } ] }
+{ "job_id": <ID>, "candidates": [ { "source_title": "...", "score": 0-100, "...": "free-form fields" } ] }
 ```
-Solo `source_title` obbligatorio; `tasks.php` segnala come `duplicate` gli
-`source_url` già visti.
+Only `source_title` is required; `tasks.php` flags already-seen
+`source_url`s as `duplicate`.
 
 ### 4.3 `derive` → `derive-complete`
 ```
-python core/runner_remote.py derive-complete --id <ID> --der-id <N> --payload payload.json --domain <nome>
+python core/runner_remote.py derive-complete --id <ID> --der-id <N> --payload payload.json --domain <name>
 ```
 ```json
 { "id": <ID>, "derivative_id": <N>, "content_md": "...", "content_json": {...}, "meta": {...} }
@@ -201,30 +215,31 @@ python core/runner_remote.py derive-complete --id <ID> --der-id <N> --payload pa
 
 ### 4.4 `voice` → `voice-complete`
 ```
-python core/runner_remote.py voice-complete --id <ID> --scope global --mode seed --payload payload.json --domain <nome>
+python core/runner_remote.py voice-complete --id <ID> --scope global --mode seed --payload payload.json --domain <name>
 ```
 
 ### 4.5 `asset` → `asset-complete`
 ```
-python core/runner_remote.py asset-complete --id <ID> --der-id <N> --payload payload.json --domain <nome>
+python core/runner_remote.py asset-complete --id <ID> --der-id <N> --payload payload.json --domain <name>
 ```
-Usa `url` al posto di `data_base64` se il file è già disponibile altrove.
+Use `url` instead of `data_base64` if the file is already available
+elsewhere.
 
-### 4.6 Copertine/immagini legate a un task → `cover`
+### 4.6 Covers/images linked to a task → `cover`
 ```
-python core/runner_remote.py cover --draft-id <ID> --file percorso.jpg --prompt "..." --domain <nome>
+python core/runner_remote.py cover --draft-id <ID> --file path.jpg --prompt "..." --domain <name>
 ```
 
 ---
 
-## 5. Estendere il connettore
+## 5. Extending the connector
 
-Per aggiungere un nuovo `action_type` a una connessione esistente: aggiornalo in
-`connections/<nome>/NOTES.md`. Se serve un nuovo modo di chiudere un task che
-nessuna delle azioni esistenti copre, valuta se estendere `core/tasks.php` (PHP
-semplice e commentato) — solo per backend remoto; il locale resta
-volutamente minimale.
+To add a new `action_type` to an existing connection: update it in
+`connections/<name>/NOTES.md`. If you need a new way to close a task that
+none of the existing actions cover, consider extending `core/tasks.php`
+(plain, commented PHP) — only for the remote backend; the local one stays
+deliberately minimal.
 
-Per un caso d'uso corposo, usa `examples/editorial-content-automation/` come
-modello di come si struttura un'estensione completa (addendum a CLAUDE.md,
-config di dominio, script di supporto).
+For a substantial use case, use `examples/editorial-content-automation/` as
+a model of how a complete extension is structured (CLAUDE.md addendum,
+domain config, support scripts).

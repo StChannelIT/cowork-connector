@@ -1,12 +1,14 @@
 # Changelog
 
-Formato basato su [Keep a Changelog](https://keepachangelog.com/it/1.1.0/),
-versioning secondo [Semantic Versioning](https://semver.org/lang/it/):
-`MAJOR.MINOR.PATCH` — MAJOR per cambi che rompono compatibilità (es. formati di
-payload o comandi CLI cambiati), MINOR per nuove funzionalità retrocompatibili,
-PATCH per correzioni.
+*[🇮🇹 Versione italiana](CHANGELOG.it.md)*
 
-Per taggare una release dopo aver fatto commit in locale:
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+versioning per [Semantic Versioning](https://semver.org/):
+`MAJOR.MINOR.PATCH` — MAJOR for breaking changes (e.g. changed payload
+formats or CLI commands), MINOR for backward-compatible new features, PATCH
+for fixes.
+
+To tag a release after committing locally:
 ```
 git tag -a v0.1.0 -m "v0.1.0"
 git push origin v0.1.0
@@ -14,27 +16,28 @@ git push origin v0.1.0
 
 ## [0.1.0] — 2026-07-07
 
-Prima versione pubblica.
+First public release.
 
-### Aggiunto
-- `core/tasks.php` — motore generico PHP+SQLite per coda **remota**: `next`,
-  `add`, `complete`, `derive_complete`, `voice_complete`, `asset_complete`,
-  `cover`, `ingest`, `fail`, `stats`, `status`, `recent`.
-- `core/runner_remote.py` — client CLI per il backend remoto.
-- `core/runner_local.py` — client per coda **locale** (SQLite, zero deploy),
-  per connessioni che non richiedono un server esterno.
-- `CLAUDE.md` — wizard di connessione a 4 fasi (collegamento al progetto,
-  scelta/creazione del backend coda, definizione delle attività, task
-  schedulato token-efficiente) + protocollo di dettaglio.
-- `config/cowork_domains.example.json` — schema di configurazione per le
-  connessioni remote.
-- `connections/` — convenzione per i file dedicati a ogni connessione attiva
-  (`NOTES.md`, `queue.db`).
-- `examples/editorial-content-automation/` — caso d'uso reale e completo
-  (automazione editoriale) come riferimento, anonimizzato.
+### Added
+- `core/tasks.php` — generic PHP+SQLite engine for the **remote** queue:
+  `next`, `add`, `complete`, `derive_complete`, `voice_complete`,
+  `asset_complete`, `cover`, `ingest`, `fail`, `stats`, `status`, `recent`.
+- `core/runner_remote.py` — CLI client for the remote backend.
+- `core/runner_local.py` — client for the **local** queue (SQLite, zero
+  deploy), for connections that don't require an external server.
+- `CLAUDE.md` — 4-phase connection wizard (project linking,
+  choosing/creating the queue backend, defining the tasks, token-efficient
+  scheduled task) + detailed protocol.
+- `config/cowork_domains.example.json` — configuration schema for remote
+  connections.
+- `connections/` — convention for the files dedicated to each active
+  connection (`NOTES.md`, `queue.db`).
+- `examples/editorial-content-automation/` — a real, complete use case
+  (editorial automation) as a reference, anonymized.
 - `LICENSE` (MIT).
 
-### Note
-- Il repo non contiene ancora una CLI unificata: i due backend (locale/remoto)
-  hanno client separati (`runner_local.py` / `runner_remote.py`) con comandi
-  simili ma non identici — vedi `CLAUDE.md` per quando usare l'uno o l'altro.
+### Notes
+- The repo doesn't yet contain a unified CLI: the two backends
+  (local/remote) have separate clients (`runner_local.py` /
+  `runner_remote.py`) with similar but not identical commands — see
+  `CLAUDE.md` for when to use one or the other.
