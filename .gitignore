@@ -26,3 +26,7 @@ Thumbs.db
 # Local worktrees created by the Claude Code harness (isolated checkouts,
 # never part of the tracked tree)
 .claude/worktrees/
+
+# Local, non-shared process instructions for Claude Code (commit/versioning
+# rules) — not part of the public project docs
+CLAUDE.local.md

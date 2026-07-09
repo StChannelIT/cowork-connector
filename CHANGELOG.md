@@ -10,9 +10,16 @@ for fixes.
 
 To tag a release after committing locally:
 ```
-git tag -a v0.2.0 -m "v0.2.0"
-git push origin v0.2.0
+git tag -a v0.2.1 -m "v0.2.1"
+git push origin v0.2.1
 ```
+
+## [0.2.1] — 2026-07-09
+
+### Changed
+- `.gitignore` now also excludes `CLAUDE.local.md` (local, non-shared
+  process instructions for Claude Code — commit/versioning conventions,
+  not part of the public project docs).
 
 ## [0.2.0] — 2026-07-09
 
