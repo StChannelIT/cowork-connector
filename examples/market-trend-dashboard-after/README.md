@@ -20,6 +20,8 @@ una sessione Cowork, schedulata o lanciata a mano, secondo le istruzioni in
 4. Nella pagina, incolla il token scelto al punto 1 nel campo "Token di
    accesso" e premi "Salva" (resta solo nel `localStorage` del browser).
 
+⚠️ Se il file `cowork_tasks.db` finisce nella web root pubblica, chiunque conosca l'URL può scaricarne l'intera cronologia dei job. Spostalo fuori dalla web root, oppure blocca l'accesso HTTP diretto (es. una regola `.htaccess`/nginx che nega le richieste dirette a `*.db`).
+
 ## Uso
 
 Inserisci un ticker o una parola chiave e premi "Analizza": il job entra in

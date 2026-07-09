@@ -78,6 +78,10 @@ form.addEventListener('submit', async (event) => {
 });
 
 async function loadJobs() {
+  if (!getToken()) {
+    jobsEl.innerHTML = '<p>Imposta il token per vedere i job.</p>';
+    return;
+  }
   try {
     const jobs = await api('action=recent&limit=20', { method: 'GET' });
     renderJobs(jobs);
