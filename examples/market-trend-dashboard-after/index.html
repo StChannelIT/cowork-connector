@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Market Trend Dashboard — dopo (Cowork Connector)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 760px; margin: 40px auto; padding: 0 16px; color: #1a1a1a; }
+  h1 { font-size: 1.4rem; }
+  h3 { font-size: 1.05rem; }
+  section { margin: 24px 0; }
+  form { display: flex; gap: 8px; }
+  input { flex: 1; padding: 8px; font-size: 1rem; }
+  button { padding: 8px 16px; font-size: 1rem; cursor: pointer; }
+  #status { font-style: italic; color: #555; margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 0.9rem; }
+  .job-row { cursor: pointer; }
+  .job-row:hover { background: #f5f5f5; }
+  #detail pre { white-space: pre-wrap; background: #f5f5f5; padding: 12px; border-radius: 6px; }
+  .note { font-size: 0.85rem; color: #777; }
+</style>
+</head>
+<body>
+  <h1>Market Trend Dashboard — versione "dopo"</h1>
+  <p>Stessa analisi della versione "prima", ma la richiesta va nella coda del Cowork Connector invece che a un'API a pagamento diretta.</p>
+
+  <section>
+    <h3>Token di accesso</h3>
+    <form onsubmit="return false">
+      <input id="token" type="password" placeholder="Token (vedi tasks.php)">
+      <button id="save-token" type="button">Salva</button>
+    </form>
+  </section>
+
+  <section>
+    <h3>Nuova analisi</h3>
+    <form id="analyze-form">
+      <input id="target" type="text" placeholder="Es. BTC, oppure 'agentic AI'" required>
+      <button type="submit">Analizza</button>
+    </form>
+    <div id="status"></div>
+  </section>
+
+  <section>
+    <h3>Job recenti</h3>
+    <div id="jobs"></div>
+  </section>
+
+  <section>
+    <h3>Dettaglio</h3>
+    <div id="detail"></div>
+  </section>
+
+  <p class="note">Esempio illustrativo del Cowork Connector — vedi <code>examples/market-trend-dashboard-before/</code> per la versione con chiamata diretta a un'API a pagamento.</p>
+  <script src="app.js"></script>
+</body>
+</html>
