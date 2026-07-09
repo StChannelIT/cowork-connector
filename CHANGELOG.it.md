@@ -10,9 +10,30 @@ PATCH per correzioni.
 
 Per taggare una release dopo aver fatto commit in locale:
 ```
-git tag -a v0.1.0 -m "v0.1.0"
-git push origin v0.1.0
+git tag -a v0.2.0 -m "v0.2.0"
+git push origin v0.2.0
 ```
+
+## [0.2.0] — 2026-07-09
+
+### Aggiunto
+- `examples/market-trend-dashboard-before/` e `examples/market-trend-dashboard-after/`
+  — una coppia di esempi dashboard prima/dopo: la versione "prima" chiama
+  direttamente un'API AI a pagamento (segnaposto) per un'analisi di trend
+  crypto/social, la versione "dopo" usa invece la coda remota del Cowork
+  Connector (`action_type` `market_trend`).
+- `examples/seo-geo-dashboard-before/` e `examples/seo-geo-dashboard-after/`
+  — stesso schema prima/dopo per un audit SEO + citabilità AI di un dominio
+  (`action_type` `seo_geo_audit`).
+
+### Modificato
+- L'inglese è ora la lingua di default nei documenti principali
+  (`README.md`, `CLAUDE.md`, `CHANGELOG.md`, `connections/README.md`,
+  `config/cowork_domains.example.json`) e nell'esempio
+  `examples/editorial-content-automation/`, con versioni `.it` gemelle per
+  gli originali italiani.
+- Commenti e messaggi di `core/tasks.php` tradotti in inglese (nessun
+  cambio all'API/comportamento).
 
 ## [0.1.0] — 2026-07-07
 
