@@ -1,0 +1,14 @@
+{
+  "_comment": "Example block to paste into your cowork_domains.json, under your own domain key. Replace api_url/api_token with your real values.",
+
+  "seo-geo-dashboard": {
+    "api_url":   "https://yoursite.com/path/to/seo-geo-dashboard-after/tasks.php",
+    "api_token": "PASTE_YOUR_TOKEN_HERE",
+    "default":   false,
+
+    "content": {
+      "language": "it",
+      "notes": "Dashboard di audit SEO/GEO. Un solo action_type: seo_geo_audit, vedi CLAUDE-addendum.md per come eseguirlo e chiuderlo."
+    }
+  }
+}
