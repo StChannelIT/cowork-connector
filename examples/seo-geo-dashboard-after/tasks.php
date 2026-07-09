@@ -1,36 +1,38 @@
 <?php
 /**
- * Cowork Connector — rotta API della coda attività (SQLite + token)
+ * Cowork Connector — task queue API route (SQLite + token)
  * -------------------------------------------------------------------
- * Espone una coda di task generica: chi vuole automatizzare qualcosa la scrive
- * (action=add, o direttamente nel DB da un tuo CMS/script), Claude in Cowork la
- * legge (action=next) e vi riscrive l'esito con una delle azioni di chiusura
- * (complete / derive_complete / voice_complete / asset_complete / cover / ingest
- * / fail).
+ * Exposes a generic task queue: whoever wants to automate something writes
+ * to it (action=add, or directly into the DB from your own CMS/script),
+ * Claude in Cowork reads it (action=next) and writes the outcome back with
+ * one of the closing actions (complete / derive_complete / voice_complete /
+ * asset_complete / cover / ingest / fail).
  *
- * Requisiti server: PHP 7.4+ con estensione pdo_sqlite (di serie quasi ovunque).
+ * Server requirements: PHP 7.4+ with the pdo_sqlite extension (available by
+ * default almost everywhere).
  *
- * Sicurezza: ogni richiesta deve includere il token, via header
- *   X-Auth-Token: <token>   oppure   ?token=<token>
+ * Security: every request must include the token, via header
+ *   X-Auth-Token: <token>   or   ?token=<token>
  *
  * Setup:
- *   1. Sostituisci AUTH_TOKEN qui sotto con un token lungo e casuale.
- *   2. Carica questo file su uno spazio web scrivibile da PHP.
- *   3. (Consigliato) metti il file .db creato accanto a questo script fuori dal
- *      web root, o nega l'accesso diretto via HTTP a livello server (.htaccess/nginx).
+ *   1. Replace AUTH_TOKEN below with a long, random token.
+ *   2. Upload this file to a web space PHP can write to.
+ *   3. (Recommended) put the .db file this script creates outside the web
+ *      root, or deny direct HTTP access to it at the server level
+ *      (.htaccess/nginx).
  */
 
-// ============ CONFIG (DA MODIFICARE) ============
-const AUTH_TOKEN        = 'CAMBIA_QUESTO_TOKEN_LUNGO_E_CASUALE';
+// ============ CONFIG (TO CHANGE) ============
+const AUTH_TOKEN        = 'CHANGE_THIS_LONG_RANDOM_TOKEN';
 const DB_FILE            = __DIR__ . '/cowork_tasks.db';
 const COVERS_DIR         = __DIR__ . '/covers';
 const ASSETS_DIR         = __DIR__ . '/assets';
-const MAX_UPLOAD_BYTES   = 10 * 1024 * 1024; // 10 MB, limite sui payload base64
+const MAX_UPLOAD_BYTES   = 10 * 1024 * 1024; // 10 MB, limit on base64 payloads
 // ================================================
 
 header('Content-Type: application/json; charset=utf-8');
 
-// ---- Autenticazione ----
+// ---- Authentication ----
 $provided = $_SERVER['HTTP_X_AUTH_TOKEN'] ?? ($_SERVER['HTTP_X_RADAR_TOKEN'] ?? ($_GET['token'] ?? ''));
 if (!is_string($provided) || $provided === '' || !hash_equals(AUTH_TOKEN, $provided)) {
     http_response_code(401);
@@ -38,7 +40,7 @@ if (!is_string($provided) || $provided === '' || !hash_equals(AUTH_TOKEN, $provi
     exit;
 }
 
-// ---- Connessione + schema ----
+// ---- Connection + schema ----
 try {
     $pdo = new PDO('sqlite:' . DB_FILE);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -118,12 +120,12 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS candidates (
     score_reason   TEXT,
     angle          TEXT,
     target         TEXT,
-    dup_status     TEXT DEFAULT 'trovato',
+    dup_status     TEXT DEFAULT 'new',
     created_at     TEXT NOT NULL
 );");
 
 // ---------------------------------------------------------------------------
-// Helper
+// Helpers
 // ---------------------------------------------------------------------------
 
 function now_iso() { return gmdate('Y-m-d\TH:i:s\Z'); }
@@ -146,14 +148,14 @@ function json_out($v) {
     return $d === null && $v !== 'null' ? $v : $d;
 }
 
-/** Decodifica un'immagine base64 (con o senza prefisso data URI) e la salva su disco. */
+/** Decode a base64 image (with or without a data URI prefix) and save it to disk. */
 function save_base64_image($b64, $dir, $basename) {
     if (strpos($b64, ',') !== false && stripos($b64, 'base64') !== false) {
         $b64 = substr($b64, strpos($b64, ',') + 1);
     }
     $bytes = base64_decode($b64, true);
-    if ($bytes === false) throw new RuntimeException('base64 non valido');
-    if (strlen($bytes) > MAX_UPLOAD_BYTES) throw new RuntimeException('file troppo grande');
+    if ($bytes === false) throw new RuntimeException('invalid base64');
+    if (strlen($bytes) > MAX_UPLOAD_BYTES) throw new RuntimeException('file too large');
 
     $ext = 'jpg';
     if (substr($bytes, 0, 8) === "\x89PNG\r\n\x1a\n") $ext = 'png';
@@ -171,7 +173,7 @@ $action = $_GET['action'] ?? 'next';
 try {
     switch ($action) {
 
-    // ================= next: claim atomico pending -> running =================
+    // ================= next: atomic claim pending -> running =================
     case 'next': {
         $limit = (int)($_GET['limit'] ?? 5);
         if ($limit < 1) $limit = 1;
@@ -205,7 +207,7 @@ try {
         break;
     }
 
-    // ================= add: inserisce un nuovo task =================
+    // ================= add: inserts a new task =================
     case 'add': {
         $b = req_body();
         if (empty($b['prompt'])) { http_response_code(400); echo json_encode(['ok' => false, 'error' => 'prompt_required']); break; }
@@ -226,7 +228,7 @@ try {
         break;
     }
 
-    // ================= complete: esito positivo generate/revise =================
+    // ================= complete: positive outcome for generate/revise =================
     case 'complete': {
         $b = req_body();
         $id = (int)($b['id'] ?? 0);
@@ -242,7 +244,7 @@ try {
         break;
     }
 
-    // ================= derive_complete: chiude un task "derive"/"der_revise" =================
+    // ================= derive_complete: closes a "derive"/"der_revise" task =================
     case 'derive_complete': {
         $b = req_body();
         $id  = (int)($b['id'] ?? 0);
@@ -268,7 +270,7 @@ try {
         break;
     }
 
-    // ================= voice_complete: aggiorna un profilo persistente =================
+    // ================= voice_complete: updates a persistent profile =================
     case 'voice_complete': {
         $b = req_body();
         $id    = (int)($b['id'] ?? 0);
@@ -288,7 +290,7 @@ try {
         break;
     }
 
-    // ================= asset_complete: consegna asset reali (immagini/video/file) =================
+    // ================= asset_complete: delivers real assets (images/video/files) =================
     case 'asset_complete': {
         $b = req_body();
         $id  = (int)($b['id'] ?? 0);
@@ -319,7 +321,7 @@ try {
         break;
     }
 
-    // ================= cover: consegna un'immagine di copertina =================
+    // ================= cover: delivers a cover image =================
     case 'cover': {
         $b = req_body();
         $id = (int)($b['draft_id'] ?? $b['id'] ?? $b['job_id'] ?? 0);
@@ -339,10 +341,10 @@ try {
                 ->execute([':f' => $path, ':p' => $prompt, ':id' => $id]);
             echo json_encode(['ok' => true, 'id' => $id, 'cover_file' => $path, 'bytes' => $bytes]);
         } elseif ($url) {
-            // Nota: qui viene salvato solo il riferimento all'URL, senza scaricarlo
-            // lato server (evita rischi SSRF su un endpoint pubblico). Se ti serve
-            // il file scaricato server-side, aggiungi tu il fetch con una allowlist
-            // di domini/mime consentiti.
+            // Note: only the URL reference is stored here, it isn't downloaded
+            // server-side (avoids SSRF risk on a public endpoint). If you need
+            // the file downloaded server-side, add the fetch yourself with an
+            // allowlist of permitted domains/mime types.
             $pdo->prepare("UPDATE tasks SET cover_url=:u, cover_prompt=:p WHERE id=:id")
                 ->execute([':u' => $url, ':p' => $prompt, ':id' => $id]);
             echo json_encode(['ok' => true, 'id' => $id, 'cover_url' => $url]);
@@ -352,7 +354,7 @@ try {
         break;
     }
 
-    // ================= ingest: candidati di un task "scout" =================
+    // ================= ingest: candidates from a "scout" task =================
     case 'ingest': {
         $b = req_body();
         $job_id = (int)($b['job_id'] ?? 0);
@@ -362,7 +364,7 @@ try {
         $chk = $pdo->prepare("SELECT id FROM candidates WHERE job_id != :jid AND source_url = :url AND source_url != '' LIMIT 1");
         foreach (($b['candidates'] ?? []) as $c) {
             if (empty($c['source_title'])) { $skipped++; continue; }
-            $dup = 'trovato';
+            $dup = 'new';
             if (!empty($c['source_url'])) {
                 $chk->execute([':jid' => $job_id, ':url' => $c['source_url']]);
                 if ($chk->fetch()) $dup = 'duplicate';
@@ -391,7 +393,7 @@ try {
         break;
     }
 
-    // ================= fail: esito negativo (retry se restano tentativi) =================
+    // ================= fail: negative outcome (retry if attempts remain) =================
     case 'fail': {
         $b = req_body();
         $id  = (int)($b['id'] ?? 0);
@@ -407,7 +409,7 @@ try {
         break;
     }
 
-    // ================= status: dettaglio di un task =================
+    // ================= status: detail of a single task =================
     case 'status': {
         $id = (int)($_GET['draft_id'] ?? $_GET['id'] ?? 0);
         $stmt = $pdo->prepare("SELECT * FROM tasks WHERE id=:id");
@@ -429,7 +431,7 @@ try {
         break;
     }
 
-    // ================= recent: ultimi task chiusi =================
+    // ================= recent: most recently closed tasks =================
     case 'recent': {
         $limit = (int)($_GET['limit'] ?? 10);
         $stmt = $pdo->prepare(
@@ -441,7 +443,7 @@ try {
         break;
     }
 
-    // ================= list: elenco sintetico (debug) =================
+    // ================= list: summary listing (debug) =================
     case 'list': {
         $rows = $pdo->query(
             "SELECT id, status, priority, action_type, target_folder, substr(prompt,1,80) AS prompt
@@ -450,7 +452,7 @@ try {
         break;
     }
 
-    // ================= stats: conteggio per stato =================
+    // ================= stats: count by status =================
     case 'stats': {
         $rows = $pdo->query("SELECT status, COUNT(*) c FROM tasks GROUP BY status")
                     ->fetchAll(PDO::FETCH_KEY_PAIR);
