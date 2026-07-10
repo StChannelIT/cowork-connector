@@ -125,7 +125,7 @@ Per la connessione appena creata, decidi insieme all'utente:
    duplicato qui.
 4. Se il caso è corposo (più passi, esempi, config elaborata), valuta una
    cartella dedicata sotto `examples/` come riferimento futuro — vedi
-   `examples/editorial-content-automation/` per un caso reale completo.
+   `examples/market-trend-dashboard-after/` per un caso reale completo.
 
 ### Fase 4 — Task schedulato: ogni quanto controllare, e come non sprecare token
 
@@ -227,6 +227,7 @@ nessuna delle azioni esistenti copre, valuta se estendere `core/tasks.php` (PHP
 semplice e commentato) — solo per backend remoto; il locale resta
 volutamente minimale.
 
-Per un caso d'uso corposo, usa `examples/editorial-content-automation/` come
-modello di come si struttura un'estensione completa (addendum a CLAUDE.md,
-config di dominio, script di supporto).
+Per un caso d'uso corposo, usa `examples/market-trend-dashboard-after/` (o
+`examples/seo-geo-dashboard-after/`) come modello di come si struttura
+un'estensione completa (addendum a CLAUDE.md, config di dominio, script di
+supporto).

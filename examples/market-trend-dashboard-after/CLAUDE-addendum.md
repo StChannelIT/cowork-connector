@@ -18,14 +18,23 @@ repeated in the `prompt`, so both are usable).
    LunarCrush topic/creator tools instead (interactions, sentiment, top
    posts).
 2. **Write `result_md`**: a short report in Italian — synthesis, sentiment,
-   3-5 key metrics, 2-3 highlighted posts/creators if relevant.
-3. **Write `meta`**: flat numeric fields the dashboard renders as a
-   detail list, e.g.:
+   3-5 key metrics, 2-3 highlighted posts/creators if relevant. The
+   dashboard renders this with a minimal markdown parser that only
+   understands `## heading` and `- bullet` lines, so stick to those two
+   constructs (no tables, no nested lists, no inline `**bold**`).
+3. **Write `meta`**: flat fields the dashboard renders as stat cards, e.g.:
    ```json
-   { "score": 72, "sentiment": "positivo", "social_volume": 18400, "price_change_24h": 3.2 }
+   { "target": "BTC", "score": 72, "sentiment": "positivo", "social_volume": 18400, "price_change_24h": 3.2 }
    ```
-   Only include the fields that make sense for the target (crypto tickers
-   get `price_change_24h`, generic keywords may not).
+   - `target` is required — the dashboard uses it as the job's display name
+     (ticker header, detail title) since the `recent`/`status` endpoints
+     don't otherwise expose the original input.
+   - Only include the fields that make sense for the target (crypto tickers
+     get `price_change_24h`, generic keywords may not).
+   - Optional `score_history`: an array of past scores for this same
+     target, oldest first (e.g. `[58, 61, 64, 68, 70, 72]`), if you're
+     tracking it across runs — powers the trend chart in the dashboard.
+     Omit it if you have no history; the dashboard just hides the chart.
 4. **Close**:
    ```
    python core/runner_remote.py complete --id <ID> --payload payload.json --domain <this-domain>

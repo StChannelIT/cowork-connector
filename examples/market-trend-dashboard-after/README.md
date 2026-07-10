@@ -24,6 +24,13 @@ una sessione Cowork, schedulata o lanciata a mano, secondo le istruzioni in
 
 ## Uso
 
+Alla prima apertura, o finché non imposti un token, la dashboard mostra
+alcuni **job di esempio** (banner "Dati di esempio" ben visibile) così che
+stat card, grafico e tabella non siano mai vuoti — utile per uno
+screenshot o una demo senza dover far girare nulla. Appena imposti un
+token valido e arriva almeno un job reale, i dati di esempio spariscono e
+non vengono più mostrati.
+
 Inserisci un ticker o una parola chiave e premi "Analizza": il job entra in
 coda con `action_type: market_trend`. Compare nella tabella "Job recenti"
 una volta **eseguito** (non è istantaneo: serve una sessione Cowork che lo

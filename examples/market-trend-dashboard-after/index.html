@@ -2,57 +2,285 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>Market Trend Dashboard — dopo (Cowork Connector)</title>
+<title>Market Trend Dashboard — Cowork Connector</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 760px; margin: 40px auto; padding: 0 16px; color: #1a1a1a; }
-  h1 { font-size: 1.4rem; }
-  h3 { font-size: 1.05rem; }
-  section { margin: 24px 0; }
-  form { display: flex; gap: 8px; }
-  input { flex: 1; padding: 8px; font-size: 1rem; }
-  button { padding: 8px 16px; font-size: 1rem; cursor: pointer; }
-  #status { font-style: italic; color: #555; margin: 8px 0; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 0.9rem; }
-  .job-row { cursor: pointer; }
-  .job-row:hover { background: #f5f5f5; }
-  #detail pre { white-space: pre-wrap; background: #f5f5f5; padding: 12px; border-radius: 6px; }
-  .note { font-size: 0.85rem; color: #777; }
+  :root {
+    --bg: #0a0d0f;
+    --panel: #12161a;
+    --panel-2: #161b20;
+    --border: #232a2f;
+    --text: #e8e6e1;
+    --muted: #8b9198;
+    --accent: #d4a24c;
+    --accent-soft: rgba(212, 162, 76, 0.14);
+    --positive: #3ecf8e;
+    --negative: #e2574c;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+  }
+  a { color: var(--accent); }
+
+  /* ---- ticker strip (signature element) ---- */
+  #ticker {
+    background: #000;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    padding: 7px 18px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  #ticker .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--positive);
+    display: inline-block;
+    margin-right: 6px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  #ticker .sep { color: #3a3226; }
+  #ticker .delta-up { color: var(--positive); }
+  #ticker .delta-down { color: var(--negative); }
+
+  /* ---- shell ---- */
+  .shell { display: flex; min-height: calc(100vh - 34px); }
+  aside {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 22px 18px;
+  }
+  .brand { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 2px; }
+  .brand-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 24px; }
+  nav.side-nav a {
+    display: block;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    padding: 7px 0;
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -10px;
+  }
+  nav.side-nav a:hover { color: var(--text); border-left-color: var(--border); }
+  .conn-status {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .conn-status .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 8px; border-radius: 999px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .conn-status .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+  .conn-status .pill.live .dot { background: var(--positive); }
+  .conn-status .pill.demo .dot { background: var(--accent); }
+
+  main { flex: 1; padding: 28px 32px 60px; max-width: 980px; }
+
+  h1 { font-size: 1.3rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .subtitle { color: var(--muted); font-size: 0.88rem; margin: 0 0 22px; max-width: 640px; }
+
+  .banner {
+    display: none;
+    background: var(--accent-soft);
+    border: 1px solid rgba(212, 162, 76, 0.35);
+    color: var(--accent);
+    font-size: 0.8rem;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+  }
+  .banner.show { display: block; }
+
+  section { margin: 0 0 32px; scroll-margin-top: 20px; }
+  h2 {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+
+  form#analyze-form { display: flex; gap: 8px; }
+  input[type="text"], input[type="password"] {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-family: var(--sans);
+  }
+  input[type="text"]:focus, input[type="password"]:focus, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  #analyze-form input { flex: 1; }
+  button {
+    background: var(--accent);
+    color: #0a0d0f;
+    border: none;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  button.ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  #status { font-size: 0.8rem; color: var(--muted); margin-top: 8px; min-height: 1.2em; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .stat-card .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .stat-card .value { font-family: var(--mono); font-size: 1.5rem; margin-top: 6px; }
+  .stat-card .value.positive { color: var(--positive); }
+  .stat-card .value.negative { color: var(--negative); }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  #chart-wrap svg { width: 100%; height: 140px; display: block; }
+  #chart-empty { color: var(--muted); font-size: 0.82rem; }
+
+  table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.82rem; }
+  th { text-align: left; color: var(--muted); font-weight: 500; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 10px 8px; }
+  td { padding: 9px 10px; border-top: 1px solid var(--border); }
+  tr.job-row { cursor: pointer; }
+  tr.job-row:hover td { background: var(--panel-2); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.03em; }
+  .badge.done { background: rgba(62, 207, 142, 0.15); color: var(--positive); }
+  .badge.running { background: var(--accent-soft); color: var(--accent); }
+  .badge.error { background: rgba(226, 87, 76, 0.15); color: var(--negative); }
+  .badge.pending { background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); }
+
+  #detail h3 { font-size: 1rem; margin: 0 0 4px; }
+  #detail .report { font-size: 0.88rem; line-height: 1.6; }
+  #detail .report h4 { font-size: 0.85rem; color: var(--accent); margin: 16px 0 6px; }
+  #detail .report ul { margin: 6px 0; padding-left: 20px; }
+  #detail .meta-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 16px; }
+  #detail .meta-list span { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; font-size: 0.75rem; font-family: var(--mono); color: var(--muted); }
+  #detail .placeholder { color: var(--muted); font-size: 0.85rem; }
+
+  .token-row { display: flex; gap: 8px; align-items: center; }
+  .note { font-size: 0.78rem; color: var(--muted); margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .note code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+
+  @media (max-width: 720px) {
+    .shell { flex-direction: column; }
+    aside { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 16px 18px; }
+    main { padding: 22px 18px 50px; }
+  }
 </style>
 </head>
 <body>
-  <h1>Market Trend Dashboard — versione "dopo"</h1>
-  <p>Stessa analisi della versione "prima", ma la richiesta va nella coda del Cowork Connector invece che a un'API a pagamento diretta.</p>
 
-  <section>
-    <h3>Token di accesso</h3>
-    <form onsubmit="return false">
-      <input id="token" type="password" placeholder="Token (vedi tasks.php)">
-      <button id="save-token" type="button">Salva</button>
-    </form>
-  </section>
+  <div id="ticker">
+    <span><span class="dot"></span><span id="ticker-target">—</span></span>
+    <span class="sep">·</span>
+    <span>SCORE <strong id="ticker-score">—</strong></span>
+    <span class="sep">·</span>
+    <span id="ticker-delta">—</span>
+    <span class="sep">·</span>
+    <span style="color: var(--muted)">Market Trend Dashboard — Cowork Connector</span>
+  </div>
 
-  <section>
-    <h3>Nuova analisi</h3>
-    <form id="analyze-form">
-      <input id="target" type="text" placeholder="Es. BTC, oppure 'agentic AI'" required>
-      <button type="submit">Analizza</button>
-    </form>
-    <div id="status"></div>
-  </section>
+  <div class="shell">
+    <aside>
+      <div class="brand">Market Trend</div>
+      <div class="brand-sub">Analisi trend crypto/social</div>
+      <nav class="side-nav">
+        <a href="#new">Nuova analisi</a>
+        <a href="#overview">Overview</a>
+        <a href="#history">Job recenti</a>
+        <a href="#settings">Impostazioni</a>
+      </nav>
+      <div class="conn-status">
+        <div class="pill" id="conn-pill"><span class="dot"></span><span id="conn-label">Controllo...</span></div>
+        <div>Esempio illustrativo — vedi <a href="../market-trend-dashboard-before/">versione "prima"</a></div>
+      </div>
+    </aside>
 
-  <section>
-    <h3>Job recenti</h3>
-    <div id="jobs"></div>
-  </section>
+    <main>
+      <h1>Market Trend Dashboard</h1>
+      <p class="subtitle">Analizza il trend di un asset crypto o di una parola chiave social. La richiesta entra nella coda del Cowork Connector invece di chiamare un'API a pagamento in modo sincrono.</p>
 
-  <section>
-    <h3>Dettaglio</h3>
-    <div id="detail"></div>
-  </section>
+      <div class="banner" id="demo-banner">Dati di esempio — collega un token per i dati reali.</div>
 
-  <p class="note">Esempio illustrativo del Cowork Connector — vedi <code>examples/market-trend-dashboard-before/</code> per la versione con chiamata diretta a un'API a pagamento.</p>
+      <section id="new">
+        <h2>Nuova analisi</h2>
+        <form id="analyze-form">
+          <input id="target" type="text" placeholder="Es. BTC, oppure &quot;agentic AI&quot;" required autocomplete="off">
+          <button type="submit">Analizza</button>
+        </form>
+        <div id="status"></div>
+      </section>
+
+      <section id="overview">
+        <h2>Overview</h2>
+        <div class="stat-row" id="stat-row">
+          <div class="stat-card"><div class="label">Score</div><div class="value" id="stat-score">—</div></div>
+          <div class="stat-card"><div class="label">Sentiment</div><div class="value" id="stat-sentiment">—</div></div>
+          <div class="stat-card"><div class="label">Social volume</div><div class="value" id="stat-volume">—</div></div>
+          <div class="stat-card"><div class="label">24h</div><div class="value" id="stat-delta">—</div></div>
+        </div>
+        <div style="height:12px"></div>
+        <div class="panel" id="chart-wrap"><div id="chart-empty">Nessun dato ancora.</div></div>
+      </section>
+
+      <section id="history">
+        <h2>Job recenti</h2>
+        <div class="panel" id="jobs"></div>
+      </section>
+
+      <section id="detail-section">
+        <h2>Dettaglio</h2>
+        <div class="panel" id="detail"><div class="placeholder">Seleziona un job dalla tabella per vedere il report completo.</div></div>
+      </section>
+
+      <section id="settings">
+        <h2>Impostazioni</h2>
+        <div class="panel">
+          <div class="token-row">
+            <input id="token" type="password" placeholder="Token (vedi tasks.php)" style="flex:1">
+            <button class="ghost" id="save-token" type="button">Salva</button>
+          </div>
+        </div>
+      </section>
+
+      <p class="note">Esempio illustrativo del Cowork Connector — <code>tasks.php</code> in questa cartella è una copia di <code>core/tasks.php</code>. Vedi <a href="../market-trend-dashboard-before/">market-trend-dashboard-before</a> per la versione con chiamata diretta a un'API a pagamento.</p>
+    </main>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

@@ -74,7 +74,7 @@ Puoi avere più connessioni attive insieme, ognuna col backend più adatto — v
 | `core/runner_remote.py` | Client CLI che parla con `tasks.php`. |
 | `config/cowork_domains.example.json` | Schema + esempio di configurazione per le connessioni remote. Copialo in `cowork_domains.json` (fuori da git, contiene i token). |
 | `connections/` | Una cartella per ogni connessione attiva (config/note/coda locale). Vedi `connections/README.md`. |
-| `examples/editorial-content-automation/` | Caso d'uso reale e completo — automazione editoriale (bozza articolo + cover generata + post social) — come riferimento per costruire il tuo. |
+| `examples/market-trend-dashboard-after/`, `examples/seo-geo-dashboard-after/` | Due dashboard prima/dopo reali e complete (API a pagamento diretta vs. coda del Cowork Connector) — come riferimento per costruire la tua. |
 
 ## Avvio rapido
 
@@ -140,12 +140,13 @@ Dettagli di ogni payload in `CLAUDE.md` e nel codice commentato di `core/tasks.p
 
 ## Esempio completo
 
-`examples/editorial-content-automation/` mostra un'automazione reale costruita su
-questo motore (backend remoto): bozze di articoli generate da un prompt, cover
-create con un generatore d'immagini, post social multi-piattaforma, un "diario di
-voce" per mantenere coerenza di tono nel tempo. Utile come riferimento per capire
-quanto in là si può spingere questo pattern — non è richiesto per usare il
-connettore in modo semplice.
+`examples/market-trend-dashboard-{before,after}/` e
+`examples/seo-geo-dashboard-{before,after}/` mostrano due dashboard reali,
+ciascuna in versione "prima" (chiamata diretta e sincrona a un'API AI a
+pagamento) e "dopo" (stessa UI, ora collegata alla coda remota del Cowork
+Connector). Utile come riferimento per capire come si collega un front-end
+reale a questo motore — non è richiesto per usare il connettore in modo
+semplice.
 
 ## Autore
 

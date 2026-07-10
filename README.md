@@ -74,7 +74,7 @@ fits best — see `connections/`.
 | `core/runner_remote.py` | CLI client that talks to `tasks.php`. |
 | `config/cowork_domains.example.json` | Schema + example configuration for remote connections. Copy it to `cowork_domains.json` (outside git, holds the tokens). |
 | `connections/` | One folder per active connection (config/notes/local queue). See `connections/README.md`. |
-| `examples/editorial-content-automation/` | A real, complete use case — editorial automation (article draft + generated cover + social posts) — as a reference for building your own. |
+| `examples/market-trend-dashboard-after/`, `examples/seo-geo-dashboard-after/` | Two real, complete before/after dashboards (direct paid API vs. Cowork Connector queue) — as a reference for building your own. |
 
 ## Quick start
 
@@ -144,12 +144,12 @@ connection in `connections/<name>/NOTES.md` during the wizard.
 
 ## Full example
 
-`examples/editorial-content-automation/` shows a real automation built on
-this engine (remote backend): article drafts generated from a prompt, covers
-created with an image generator, multi-platform social posts, and a "voice
-profile" that keeps tone consistent over time. Useful as a reference for how
-far this pattern can be pushed — it isn't required to use the connector in a
-simple way.
+`examples/market-trend-dashboard-{before,after}/` and
+`examples/seo-geo-dashboard-{before,after}/` show two real dashboards, each
+in a "before" version (a direct, synchronous call to a paid AI API) and an
+"after" version (the same UI, now backed by the Cowork Connector's remote
+queue). Useful as a reference for how a real front-end wires into this
+engine — it isn't required to use the connector in a simple way.
 
 ## Author
 
