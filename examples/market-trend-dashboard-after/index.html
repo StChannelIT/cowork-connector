@@ -172,6 +172,21 @@
   #chart-wrap svg { width: 100%; height: 140px; display: block; }
   #chart-empty { color: var(--muted); font-size: 0.82rem; }
 
+  .registry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .registry-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; cursor: pointer; text-align: left; transition: border-color 0.15s;
+  }
+  .registry-card:hover { border-color: var(--accent); }
+  .registry-card .rc-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; }
+  .registry-card .rc-score-row { display: flex; align-items: baseline; gap: 8px; }
+  .registry-card .rc-score { font-family: var(--mono); font-size: 1.3rem; }
+  .registry-card .rc-trend { font-size: 0.78rem; }
+  .registry-card .rc-trend.up { color: var(--positive); }
+  .registry-card .rc-trend.down { color: var(--negative); }
+  .registry-card .rc-meta { font-size: 0.72rem; color: var(--muted); margin-top: 8px; }
+  .registry-empty { color: var(--muted); font-size: 0.85rem; }
+
   table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.82rem; }
   th { text-align: left; color: var(--muted); font-weight: 500; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 10px 8px; }
   td { padding: 9px 10px; border-top: 1px solid var(--border); }
@@ -221,6 +236,7 @@
       <nav class="side-nav">
         <a href="#new">Nuova analisi</a>
         <a href="#overview">Overview</a>
+        <a href="#registry">Registro per target</a>
         <a href="#history">Job recenti</a>
         <a href="#settings">Impostazioni</a>
       </nav>
@@ -255,6 +271,12 @@
         </div>
         <div style="height:12px"></div>
         <div class="panel" id="chart-wrap"><div id="chart-empty">Nessun dato ancora.</div></div>
+      </section>
+
+      <section id="registry">
+        <h2>Registro per target</h2>
+        <p class="subtitle" style="margin-bottom:14px">Ogni analisi eseguita resta in coda — questo registro raggruppa lo storico per target, cosa che una chiamata diretta sincrona (versione "prima") non può offrire.</p>
+        <div class="registry-grid" id="registry-grid"><div class="registry-empty">Nessuna analisi ancora registrata.</div></div>
       </section>
 
       <section id="history">

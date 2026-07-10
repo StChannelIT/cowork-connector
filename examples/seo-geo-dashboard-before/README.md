@@ -21,4 +21,6 @@ credenziali con quelle di un provider reale.
 
 Vedi [`examples/seo-geo-dashboard-after/`](../seo-geo-dashboard-after/) per
 la stessa dashboard integrata con la coda del Cowork Connector al posto
-della chiamata diretta.
+della chiamata diretta — lì trovi anche un "Registro per sito" con lo
+storico degli audit, impossibile da avere qui: una chiamata sincrona non
+lascia traccia una volta ricevuta la risposta.

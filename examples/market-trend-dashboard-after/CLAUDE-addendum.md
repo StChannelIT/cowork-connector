@@ -27,14 +27,15 @@ repeated in the `prompt`, so both are usable).
    { "target": "BTC", "score": 72, "sentiment": "positivo", "social_volume": 18400, "price_change_24h": 3.2 }
    ```
    - `target` is required — the dashboard uses it as the job's display name
-     (ticker header, detail title) since the `recent`/`status` endpoints
-     don't otherwise expose the original input.
+     (ticker header, detail title) **and** as the grouping key for the
+     "Registro per target" section, which aggregates every past job with
+     the same `target` into a run count, latest score, trend, and the
+     history chart. Reuse the exact same string across repeated runs of the
+     same asset/keyword (e.g. always `"BTC"`, not `"BTC"` once and
+     `"bitcoin"` another time) or the dashboard will treat them as two
+     different targets.
    - Only include the fields that make sense for the target (crypto tickers
      get `price_change_24h`, generic keywords may not).
-   - Optional `score_history`: an array of past scores for this same
-     target, oldest first (e.g. `[58, 61, 64, 68, 70, 72]`), if you're
-     tracking it across runs — powers the trend chart in the dashboard.
-     Omit it if you have no history; the dashboard just hides the chart.
 4. **Close**:
    ```
    python core/runner_remote.py complete --id <ID> --payload payload.json --domain <this-domain>

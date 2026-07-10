@@ -21,4 +21,6 @@ reale.
 
 Vedi [`examples/market-trend-dashboard-after/`](../market-trend-dashboard-after/)
 per la stessa dashboard integrata con la coda del Cowork Connector al posto
-della chiamata diretta.
+della chiamata diretta — lì trovi anche un "Registro per target" con lo
+storico delle analisi, impossibile da avere qui: una chiamata sincrona non
+lascia traccia una volta ricevuta la risposta.

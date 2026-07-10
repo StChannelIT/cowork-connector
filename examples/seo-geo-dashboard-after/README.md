@@ -38,6 +38,13 @@ Cowork che lo prenda in carico — vedi `CLAUDE-addendum.md` per come
 instradarlo, e la sezione "Esecuzione task schedulati" nel `CLAUDE.md`
 principale per come schedularla).
 
+Ogni audit resta in coda: la sezione **"Registro per sito"** raggruppa
+automaticamente lo storico per dominio, mostrando quanti audit sono stati
+fatti, l'ultimo voto, il trend rispetto all'audit precedente — la prova
+visibile di un sito che migliora nel tempo grazie alle correzioni
+suggerite, cosa che la versione "prima" (chiamata sincrona, nessuno
+storico) non può offrire.
+
 ## Diventare una connessione vera
 
 Per usare questa dashboard sul serio (non solo come esempio): segui la

@@ -177,6 +177,24 @@
   .badge.error { background: rgba(248, 113, 113, 0.15); color: var(--fail); }
   .badge.pending { background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); }
 
+  .registry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .registry-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; cursor: pointer; text-align: left; transition: border-color 0.15s;
+  }
+  .registry-card:hover { border-color: var(--accent); }
+  .registry-card .rc-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; }
+  .registry-card .rc-score-row { display: flex; align-items: baseline; gap: 8px; }
+  .registry-card .rc-grade { font-family: var(--mono); font-size: 1.3rem; font-weight: 700; }
+  .registry-card .rc-grade.pass { color: var(--pass); }
+  .registry-card .rc-grade.warn { color: var(--warn); }
+  .registry-card .rc-grade.fail { color: var(--fail); }
+  .registry-card .rc-trend { font-size: 0.78rem; }
+  .registry-card .rc-trend.up { color: var(--pass); }
+  .registry-card .rc-trend.down { color: var(--fail); }
+  .registry-card .rc-meta { font-size: 0.72rem; color: var(--muted); margin-top: 8px; }
+  .registry-empty { color: var(--muted); font-size: 0.85rem; }
+
   #detail h3 { font-size: 1rem; margin: 0 0 4px; }
   #detail .report { font-size: 0.88rem; line-height: 1.65; }
   #detail .report h4 { font-size: 0.85rem; color: var(--accent); margin: 16px 0 6px; }
@@ -211,6 +229,7 @@
       <nav class="side-nav">
         <a href="#new">Nuova analisi</a>
         <a href="#overview">Overview</a>
+        <a href="#registry">Registro per sito</a>
         <a href="#history">Job recenti</a>
         <a href="#settings">Impostazioni</a>
       </nav>
@@ -254,6 +273,12 @@
         <div class="panel">
           <div class="findings" id="findings"><div class="findings-empty">Nessun rilievo ancora.</div></div>
         </div>
+      </section>
+
+      <section id="registry">
+        <h2>Registro per sito</h2>
+        <p class="subtitle" style="margin-bottom:14px">Ogni audit eseguito resta in coda — questo registro raggruppa lo storico per dominio, cosa che una chiamata diretta sincrona (versione "prima") non può offrire.</p>
+        <div class="registry-grid" id="registry-grid"><div class="registry-empty">Nessuna analisi ancora registrata.</div></div>
       </section>
 
       <section id="history">

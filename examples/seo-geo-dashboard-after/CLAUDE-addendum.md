@@ -37,8 +37,13 @@ The task's `params` holds `{ "domain": "<domain>", "keyword": "<optional>" }`
    }
    ```
    - `domain` is required — the dashboard uses it as the job's display name
-     (status strip, detail title) since the `recent`/`status` endpoints
-     don't otherwise expose the original input.
+     (status strip, detail title) **and** as the grouping key for the
+     "Registro per sito" section, which aggregates every past audit of the
+     same `domain` into a run count, latest grade, and trend vs. the
+     previous audit. Always write the bare domain the same way across
+     repeated runs (e.g. always `"esempio.com"`, not `"esempio.com"` once
+     and `"www.esempio.com"` another time) or the dashboard will treat them
+     as two different sites.
    - `score_technical`/`score_content`/`score_ai_citability` (0-100) drive
      the inspection bars and the overall A–F grade placard (average of the
      three, rounded).
