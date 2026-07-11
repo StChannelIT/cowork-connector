@@ -10,9 +10,44 @@ PATCH per correzioni.
 
 Per taggare una release dopo aver fatto commit in locale:
 ```
-git tag -a v0.3.0 -m "v0.3.0"
-git push origin v0.3.0
+git tag -a v0.4.0 -m "v0.4.0"
+git push origin v0.4.0
 ```
+
+## [0.4.0] — 2026-07-12
+
+### Aggiunto
+- `deploy_access.json` / `config/deploy_access.example.json` — config
+  opzionale, fuori da git, per l'accesso FTP/SFTP al server, usata solo
+  quando il wizard carica/aggiorna `tasks.php` direttamente e l'utente ha
+  chiesto a Claude di persistere quell'accesso per aggiornamenti futuri
+  invece di richiederlo ogni volta.
+
+### Modificato
+- `CLAUDE.md`/`CLAUDE.it.md`, Fase 2 (setup backend remoto):
+  - Reso esplicito che la coda remota è lo stesso motore SQLite di quella
+    locale — `tasks.php` crea da solo `cowork_tasks.db` accanto a sé,
+    nulla da provisionare a mano.
+  - Aggiunto un percorso per utenti non tecnici: quando l'utente non sa
+    rispondere alle domande su PHP/hosting, offrire accesso al progetto
+    locale o credenziali FTP/SFTP invece di chiedergli di indovinare.
+  - Aggiunta guida per problemi di connessione FTP/SFTP: identificare il
+    provider di hosting e guidare l'utente nel passaggio specifico
+    necessario (caso documentato: Aruba richiede il whitelisting dell'IP
+    nel pannello prima che l'FTP si connetta).
+  - Aggiunta una procedura di script diagnostico minimo (versione PHP +
+    driver PDO disponibili, non un `phpinfo()` completo) per verificare la
+    disponibilità di `pdo_sqlite` senza chiedere all'utente, con una regola
+    contro il cambio silenzioso del motore DB di `tasks.php`.
+  - Aggiunta gestione esplicita della sicurezza per le credenziali
+    FTP/SFTP: nessuna persistenza di default, SFTP preferito a FTP, segreti
+    mai scritti in `connections/<nome>/NOTES.md`.
+  - Fase 3: aggiunto il requisito che ogni connessione dia all'utente
+    finale un modo visivo di vedere il proprio risultato — consultabile
+    nella chat di Cowork/Claude, oppure una dashboard/pagina il cui link
+    viene dato all'utente — invece di lasciare un task semplicemente
+    `done` nel DB senza che l'utente del sito possa vederlo.
+- `.gitignore`: aggiunto `deploy_access.json`.
 
 ## [0.3.0] — 2026-07-12
 

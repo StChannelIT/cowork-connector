@@ -1,0 +1,21 @@
+{
+  "_comment": "[EN version: deploy_access.example.json] Copia questo file in deploy_access.json (nella radice del progetto, FUORI da git) SOLO se l'utente ti ha chiesto di persistere l'accesso al server per futuri upload/aggiornamenti di tasks.php. Altrimenti chiedi le credenziali ogni volta e non scriverle su disco. Ogni chiave di primo livello = una connessione/sito.",
+
+  "_schema": {
+    "protocol":    "sftp (preferito, cifrato) oppure ftp — segnala l'ftp in chiaro all'utente come limite dell'hosting",
+    "host":        "es. ftp.esempio.it",
+    "port":        "es. 22 per sftp, 21 per ftp",
+    "username":    "...",
+    "password":    "lascia vuoto e chiedila ogni volta se preferisci non persisterla",
+    "remote_path": "percorso sul server dove deve vivere tasks.php (e il suo cowork_tasks.db auto-creato), es. /public_html/cowork/"
+  },
+
+  "esempio.com": {
+    "protocol":    "sftp",
+    "host":        "ftp.esempio.it",
+    "port":        22,
+    "username":    "INCOLLA_QUI_LO_USERNAME",
+    "password":    "INCOLLA_QUI_LA_PASSWORD",
+    "remote_path": "/public_html/cowork/"
+  }
+}

@@ -1,6 +1,10 @@
 # Config con dati reali (token, URL) — non va committato
 cowork_domains.json
 
+# Credenziali FTP/SFTP per il deploy di tasks.php (opzionale, solo se
+# l'utente ha chiesto di persisterle) — non va committato
+deploy_access.json
+
 # Connessioni reali dell'utente (config/note/DB locali per-connessione) —
 # resta solo la convenzione (connections/README.md, connections/.gitkeep)
 connections/*/

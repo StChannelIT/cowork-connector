@@ -1,0 +1,21 @@
+{
+  "_comment": "[IT version: deploy_access.example.it.json] Copy this file to deploy_access.json (at the project root, OUTSIDE git) ONLY if the user asked you to persist server access for future tasks.php uploads/updates. Otherwise ask for credentials fresh each time and don't write them to disk at all. Each top-level key = one connection/site.",
+
+  "_schema": {
+    "protocol":    "sftp (preferred, encrypted) or ftp — flag plain ftp to the user as a hosting limitation",
+    "host":        "e.g. ftp.example.com",
+    "port":        "e.g. 22 for sftp, 21 for ftp",
+    "username":    "...",
+    "password":    "leave empty and ask fresh if you'd rather not persist it",
+    "remote_path": "server path where tasks.php (and its auto-created cowork_tasks.db) should live, e.g. /public_html/cowork/"
+  },
+
+  "example.com": {
+    "protocol":    "sftp",
+    "host":        "ftp.example.com",
+    "port":        22,
+    "username":    "PASTE_USERNAME_HERE",
+    "password":    "PASTE_PASSWORD_HERE",
+    "remote_path": "/public_html/cowork/"
+  }
+}

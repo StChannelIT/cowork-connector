@@ -10,9 +10,42 @@ for fixes.
 
 To tag a release after committing locally:
 ```
-git tag -a v0.3.0 -m "v0.3.0"
-git push origin v0.3.0
+git tag -a v0.4.0 -m "v0.4.0"
+git push origin v0.4.0
 ```
+
+## [0.4.0] — 2026-07-12
+
+### Added
+- `deploy_access.json` / `config/deploy_access.example.json` — optional,
+  out-of-git config for FTP/SFTP server access, used only when the wizard
+  uploads/updates `tasks.php` directly and the user asked Claude to persist
+  that access for future updates instead of asking fresh each time.
+
+### Changed
+- `CLAUDE.md`/`CLAUDE.it.md`, Phase 2 (remote backend setup):
+  - Made explicit that the remote queue is the same SQLite engine as the
+    local one — `tasks.php` auto-creates `cowork_tasks.db` next to itself,
+    nothing to provision by hand.
+  - Added a non-technical-user path: when the user can't answer PHP/hosting
+    questions, offer local-project access or FTP/SFTP credentials instead of
+    asking them to guess.
+  - Added guidance for FTP/SFTP connection issues: identify the hosting
+    provider and guide the user through the specific fix needed (documented
+    case: Aruba requires IP whitelisting in its panel before FTP connects).
+  - Added a minimal diagnostic-script procedure (PHP version + available PDO
+    drivers, not a full `phpinfo()`) to verify `pdo_sqlite` availability
+    without asking the user, with a rule against silently switching
+    `tasks.php` to a different DB engine.
+  - Added explicit security handling for FTP/SFTP credentials: no default
+    persistence, SFTP preferred over FTP, secrets never written to
+    `connections/<name>/NOTES.md`.
+  - Phase 3: added a requirement that every connection give its actual end
+    user a visual way to see their result — either queryable in the
+    Cowork/Claude chat, or a dashboard/page whose link is handed to the
+    user — instead of leaving a task simply `done` in the DB with no way
+    for the site's own user to see it.
+- `.gitignore`: added `deploy_access.json`.
 
 ## [0.3.0] — 2026-07-12
 

@@ -31,6 +31,8 @@ though, there's no token consumption: there's a scheduled Cowork session.
 | `core/tasks.php` | API route to deploy on the external server, if the connection requires it. |
 | `cowork_domains.json` | Real config (URL, token) for **remote** connections. Not in the repo — you create it during setup, it stays out of git. |
 | `config/cowork_domains.example.json` | Commented schema + example, to copy and fill in. |
+| `deploy_access.json` | Optional: FTP/SFTP server access, only if the user asked you to persist it for future `tasks.php` uploads/updates. Not in the repo, stays out of git. |
+| `config/deploy_access.example.json` | Commented schema + example for `deploy_access.json`, to copy and fill in. |
 | `connections/<name>/` | One folder per active connection: `NOTES.md` (what it does, which `action_type` it uses) + `queue.db` if the backend is local. See `connections/README.md`. |
 
 ---
@@ -79,7 +81,7 @@ Two backends, choose based on where the queue needs to be reachable:
 | Backend | When to use it | Files involved | How it's fed |
 |---|---|---|---|
 | **Local** | The work is internal to Cowork (research, files, content): no external system needs to write to the queue on its own | `core/runner_local.py`, SQLite DB in `connections/<name>/queue.db` | You (or another local automation) call `add`; zero deploy, zero tokens/URLs to manage |
-| **Remote** | An external system needs to write tasks on its own (form, CMS, webhook), or the queue needs to be reachable from outside Cowork | `core/tasks.php` (external server) + `core/runner_remote.py` | The external system calls `POST ?action=add` with the token — or you do it by hand/from a script |
+| **Remote** | An external system needs to write tasks on its own (form, CMS, webhook), or the queue needs to be reachable from outside Cowork | `core/tasks.php` (external server) + `core/runner_remote.py` — **same SQLite engine as the local backend**: `tasks.php` creates `cowork_tasks.db` next to itself on first run (see `DB_FILE` at the top of the file), no DB to create/configure by hand | The external system calls `POST ?action=add` with the token — or you do it by hand/from a script |
 
 Steps:
 
@@ -91,6 +93,10 @@ Steps:
    ```
    Creates `connections/<name>/queue.db`. End of queue-side setup.
 3. **Remote**:
+   - The remote queue **is** a SQLite file (`cowork_tasks.db`), exactly like
+     the local one — it just lives on the external server and is reachable
+     over HTTP+token instead of the local filesystem. `tasks.php` creates it
+     on first run: there's no "real" database to provision separately.
    - Verify the user has a PHP 7.4+ server with `pdo_sqlite` available
      (shared hosting is fine). If they don't, explain that before going
      further.
@@ -106,6 +112,39 @@ Steps:
    - Test: `python core/runner_remote.py stats --domain <name>` should
      respond with a JSON of counts. HTTP 401 → token mismatch. Network
      error → check the URL and that `tasks.php` was uploaded correctly.
+   - **If the user can't answer the technical questions above** (PHP,
+     hosting), offer two paths instead of asking them to guess: access to a
+     local copy of the project (you check it yourself directly), or the live
+     site's FTP/SFTP credentials (you upload a first version of `tasks.php`
+     yourself and verify PHP/`pdo_sqlite` there).
+   - **If the FTP/SFTP connection fails or the user doesn't know how to
+     proceed**, try to figure out the hosting provider (from the domain,
+     error messages, or by asking directly) and guide them through the
+     specific step needed — don't just say "it's not working." Known case:
+     **Aruba** requires whitelisting the IP you're connecting from in the
+     hosting panel before FTP accepts the connection; if the host is Aruba
+     (or gives the same symptom — connection refused/timeout with no
+     credential error), guide the user there.
+   - **To check PHP/`pdo_sqlite` without having to ask the user**: upload a
+     minimal diagnostic script (NOT a full `phpinfo()`, which exposes
+     sensitive paths/config) that reports only `PHP_VERSION`,
+     `PDO::getAvailableDrivers()`, and whether `pdo_sqlite` is loaded; call
+     it over HTTP, read the response, then **delete it right away** (don't
+     leave diagnostic endpoints exposed on the site). If `pdo_sqlite` is
+     missing, check `pdo_drivers` for what else is available (e.g. `mysql`)
+     — but don't adapt `tasks.php` to a different engine on your own
+     initiative: that's an architectural change, propose it and wait for the
+     user's confirmation.
+   - **If you proceed with direct server access (FTP/SFTP)**: this is a
+     sensitive action, handle it carefully. Ask for credentials only when
+     needed, use them for the current session's `tasks.php` upload, and do
+     NOT persist them by default. If the user wants you to reuse them later
+     (for updates), save them in `deploy_access.json` (schema in
+     `config/deploy_access.example.json`) — same out-of-git pattern as
+     `cowork_domains.json`, never in `connections/<name>/NOTES.md` (that
+     file isn't meant for secrets). Prefer SFTP over FTP when available
+     (encrypted transport); if the hosting only offers plain FTP, flag that
+     to the user as a hosting limitation, not your choice.
 4. **In both cases**, create `connections/<name>/NOTES.md` (see
    `connections/README.md` for the format) — you fill it in during Phase 3.
 5. **Queue a test task** and verify it comes back from `next`:
@@ -129,11 +168,18 @@ For the connection just created, decide together with the user:
    `voice-complete`, `asset-complete`, `cover`, `ingest` are also available —
    use whichever are useful for the case, ignore the rest (details and
    payloads are in `core/tasks.php`, commented).
-3. **Write it all in `connections/<name>/NOTES.md`**: 10-20 lines listing
+3. **Make sure the connection's actual end user has a visual way to see
+   their result** — not just a task sitting `done` in the DB. Two valid
+   paths, no third one: (a) queryable inside the Cowork/Claude chat itself
+   (the user asks and gets their task's outcome back), or (b) a real
+   dashboard/page with a history, whose link you give the user. If neither
+   is obvious from the use case, ask explicitly before considering Phase 3
+   closed.
+4. **Write it all in `connections/<name>/NOTES.md`**: 10-20 lines listing
    `action_type` → how to close it → any fixed rules (language, tone,
    constraints). The detail of *what to do* stays in each task's `prompt`,
    it shouldn't be duplicated here.
-4. If the case is substantial (multiple steps, examples, elaborate config),
+5. If the case is substantial (multiple steps, examples, elaborate config),
    consider a dedicated folder under `examples/` as a future reference —
    see `examples/market-trend-dashboard-after/` for a complete real case.
 
