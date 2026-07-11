@@ -10,9 +10,38 @@ PATCH per correzioni.
 
 Per taggare una release dopo aver fatto commit in locale:
 ```
-git tag -a v0.2.1 -m "v0.2.1"
-git push origin v0.2.1
+git tag -a v0.3.0 -m "v0.3.0"
+git push origin v0.3.0
 ```
+
+## [0.3.0] — 2026-07-12
+
+### Aggiunto
+- Registro delle analisi per sito/target negli esempi
+  `market-trend-dashboard-after` e `seo-geo-dashboard-after`: una sezione
+  "Registro" raggruppa ogni job passato per target (ticker crypto/parola
+  chiave) o dominio, mostrando numero di analisi, ultimo punteggio/voto e
+  trend rispetto all'analisi precedente — la prova visibile e persistente
+  dell'uso ripetuto del connettore, cosa che una chiamata API diretta e
+  sincrona non può mai offrire.
+
+### Modificato
+- `market-trend-dashboard-{before,after}` e `seo-geo-dashboard-{before,after}`
+  ridisegnate con identità visive distinte e legate al soggetto, al posto
+  di form spoglie e non stilizzate: uno stile "terminale finanziario"
+  (scuro, ticker ambra, numeri in monospace, grafico SVG dell'andamento)
+  per market-trend, e uno stile "report di ispezione" (scuro, accento blu,
+  placard con voto A–F, barre di ispezione, checklist di rilievi) per
+  seo-geo. Le dashboard "-dopo" ora mostrano dati di esempio (stati
+  done/running/error) finché non sono disponibili un token e job reali,
+  così non sono mai vuote in uno screenshot/video.
+
+### Rimosso
+- `examples/editorial-content-automation/` — sostituito dalle dashboard
+  come caso di riferimento principale del repo. I riferimenti in
+  `CLAUDE.md`/`CLAUDE.it.md` e `README.md`/`README.it.md` ora puntano a
+  `examples/market-trend-dashboard-after/` e
+  `examples/seo-geo-dashboard-after/`.
 
 ## [0.2.1] — 2026-07-09
 

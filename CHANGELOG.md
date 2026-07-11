@@ -10,9 +10,37 @@ for fixes.
 
 To tag a release after committing locally:
 ```
-git tag -a v0.2.1 -m "v0.2.1"
-git push origin v0.2.1
+git tag -a v0.3.0 -m "v0.3.0"
+git push origin v0.3.0
 ```
+
+## [0.3.0] — 2026-07-12
+
+### Added
+- Per-site/target analysis registry in the `market-trend-dashboard-after`
+  and `seo-geo-dashboard-after` examples: a "Registro" section groups every
+  past job by target (crypto ticker/keyword) or domain, showing run count,
+  latest score/grade, and trend vs. the previous run — the visible,
+  persistent record of repeated connector usage that a synchronous direct
+  API call can never provide.
+
+### Changed
+- `market-trend-dashboard-{before,after}` and `seo-geo-dashboard-{before,after}`
+  redesigned with distinct, subject-grounded visual identities instead of
+  bare unstyled forms: a "financial terminal" look (dark, amber ticker
+  strip, monospace numerics, SVG trend chart) for market-trend, and an
+  "inspection report" look (dark, blue accent, A–F letter-grade placard,
+  inspection bars, findings checklist) for seo-geo. The "-after" dashboards
+  now ship demo data (done/running/error states) shown until a real token
+  and real jobs are available, so the dashboards are never empty on
+  screenshot/video.
+
+### Removed
+- `examples/editorial-content-automation/` — superseded by the dashboard
+  examples as the repo's primary reference case. References in
+  `CLAUDE.md`/`CLAUDE.it.md` and `README.md`/`README.it.md` now point to
+  `examples/market-trend-dashboard-after/` and
+  `examples/seo-geo-dashboard-after/` instead.
 
 ## [0.2.1] — 2026-07-09
 
