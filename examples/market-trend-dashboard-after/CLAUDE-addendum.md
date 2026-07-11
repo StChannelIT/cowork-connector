@@ -18,14 +18,24 @@ repeated in the `prompt`, so both are usable).
    LunarCrush topic/creator tools instead (interactions, sentiment, top
    posts).
 2. **Write `result_md`**: a short report in Italian — synthesis, sentiment,
-   3-5 key metrics, 2-3 highlighted posts/creators if relevant.
-3. **Write `meta`**: flat numeric fields the dashboard renders as a
-   detail list, e.g.:
+   3-5 key metrics, 2-3 highlighted posts/creators if relevant. The
+   dashboard renders this with a minimal markdown parser that only
+   understands `## heading` and `- bullet` lines, so stick to those two
+   constructs (no tables, no nested lists, no inline `**bold**`).
+3. **Write `meta`**: flat fields the dashboard renders as stat cards, e.g.:
    ```json
-   { "score": 72, "sentiment": "positivo", "social_volume": 18400, "price_change_24h": 3.2 }
+   { "target": "BTC", "score": 72, "sentiment": "positivo", "social_volume": 18400, "price_change_24h": 3.2 }
    ```
-   Only include the fields that make sense for the target (crypto tickers
-   get `price_change_24h`, generic keywords may not).
+   - `target` is required — the dashboard uses it as the job's display name
+     (ticker header, detail title) **and** as the grouping key for the
+     "Registro per target" section, which aggregates every past job with
+     the same `target` into a run count, latest score, trend, and the
+     history chart. Reuse the exact same string across repeated runs of the
+     same asset/keyword (e.g. always `"BTC"`, not `"BTC"` once and
+     `"bitcoin"` another time) or the dashboard will treat them as two
+     different targets.
+   - Only include the fields that make sense for the target (crypto tickers
+     get `price_change_24h`, generic keywords may not).
 4. **Close**:
    ```
    python core/runner_remote.py complete --id <ID> --payload payload.json --domain <this-domain>

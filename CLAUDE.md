@@ -135,7 +135,7 @@ For the connection just created, decide together with the user:
    it shouldn't be duplicated here.
 4. If the case is substantial (multiple steps, examples, elaborate config),
    consider a dedicated folder under `examples/` as a future reference —
-   see `examples/editorial-content-automation/` for a complete real case.
+   see `examples/market-trend-dashboard-after/` for a complete real case.
 
 ### Phase 4 — Scheduled task: how often to check, and how not to waste tokens
 
@@ -240,6 +240,6 @@ none of the existing actions cover, consider extending `core/tasks.php`
 (plain, commented PHP) — only for the remote backend; the local one stays
 deliberately minimal.
 
-For a substantial use case, use `examples/editorial-content-automation/` as
-a model of how a complete extension is structured (CLAUDE.md addendum,
-domain config, support scripts).
+For a substantial use case, use `examples/market-trend-dashboard-after/` (or
+`examples/seo-geo-dashboard-after/`) as a model of how a complete extension
+is structured (CLAUDE.md addendum, domain config, support scripts).

@@ -24,12 +24,26 @@ una sessione Cowork, schedulata o lanciata a mano, secondo le istruzioni in
 
 ## Uso
 
+Alla prima apertura, o finché non imposti un token, la dashboard mostra
+alcuni **job di esempio** (banner "Dati di esempio" ben visibile) così che
+placard del voto, barre e tabella non siano mai vuoti — utile per uno
+screenshot o una demo senza dover far girare nulla. Appena imposti un
+token valido e arriva almeno un job reale, i dati di esempio spariscono e
+non vengono più mostrati.
+
 Inserisci un dominio (e opzionalmente una parola chiave) e premi "Analizza":
 il job entra in coda con `action_type: seo_geo_audit`. Compare nella tabella
 "Job recenti" una volta **eseguito** (non è istantaneo: serve una sessione
 Cowork che lo prenda in carico — vedi `CLAUDE-addendum.md` per come
 instradarlo, e la sezione "Esecuzione task schedulati" nel `CLAUDE.md`
 principale per come schedularla).
+
+Ogni audit resta in coda: la sezione **"Registro per sito"** raggruppa
+automaticamente lo storico per dominio, mostrando quanti audit sono stati
+fatti, l'ultimo voto, il trend rispetto all'audit precedente — la prova
+visibile di un sito che migliora nel tempo grazie alle correzioni
+suggerite, cosa che la versione "prima" (chiamata sincrona, nessuno
+storico) non può offrire.
 
 ## Diventare una connessione vera
 
