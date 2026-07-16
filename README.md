@@ -1,8 +1,8 @@
-# Cowork Connector
+# Cowork Connector for Claude
 
 *[🇮🇹 Versione italiana](README.it.md)*
 
-`v0.4.0` — see `CHANGELOG.md` for the version history.
+`v0.4.3` — see `CHANGELOG.md` for the version history.
 
 Automating an external project usually means handing it a **paid API key**
 (OpenAI, Anthropic API, etc.) to consume by the token. Cowork Connector

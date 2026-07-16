@@ -10,9 +10,20 @@ PATCH per correzioni.
 
 Per taggare una release dopo aver fatto commit in locale:
 ```
-git tag -a v0.4.2 -m "v0.4.2"
-git push origin v0.4.2
+git tag -a v0.4.3 -m "v0.4.3"
+git push origin v0.4.3
 ```
+
+## [0.4.3] — 2026-07-16
+
+### Modificato
+- Titolo/descrizione del repo ridefiniti come "Cowork Connector for Claude"
+  (H1 del README in entrambe le lingue) — il nome precedente non conteneva
+  la parola chiave "Claude", penalizzando la discoverability SEO/GEO per
+  ricerche e lookup assistiti da AI legati agli strumenti Claude/Anthropic.
+  Anche descrizione GitHub, topics e slug del repo andrebbero allineati (vedi
+  note di commit/PR — richiede accesso alla web UI di GitHub, non
+  automatizzabile da questa sessione).
 
 ## [0.4.2] — 2026-07-16
 

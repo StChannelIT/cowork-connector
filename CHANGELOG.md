@@ -10,9 +10,19 @@ for fixes.
 
 To tag a release after committing locally:
 ```
-git tag -a v0.4.2 -m "v0.4.2"
-git push origin v0.4.2
+git tag -a v0.4.3 -m "v0.4.3"
+git push origin v0.4.3
 ```
+
+## [0.4.3] — 2026-07-16
+
+### Changed
+- Repo title/description reframed as "Cowork Connector for Claude" (README
+  H1 in both languages) — the previous name carried no "Claude" keyword,
+  hurting SEO/GEO discoverability for searches and AI-assisted lookups
+  related to Claude/Anthropic tooling. GitHub repo description, topics, and
+  the repo slug itself should be updated to match (see PR/commit notes —
+  requires GitHub web UI access, not automatable from this session).
 
 ## [0.4.2] — 2026-07-16
 
