@@ -2,7 +2,7 @@
 
 *[🇬🇧 English version](README.md)*
 
-`v0.1.0` — vedi `CHANGELOG.md` per la cronologia delle versioni.
+`v0.4.0` — vedi `CHANGELOG.md` per la cronologia delle versioni.
 
 Automatizzare un progetto esterno di solito significa dargli una **chiave API a
 pagamento** (OpenAI, Anthropic API, ecc.) da consumare a token. Il Cowork
@@ -73,6 +73,7 @@ Puoi avere più connessioni attive insieme, ognuna col backend più adatto — v
 | `core/tasks.php` | Rotta API per la coda **remota**, da caricare sul tuo server. Crea da sé il database SQLite accanto a sé. |
 | `core/runner_remote.py` | Client CLI che parla con `tasks.php`. |
 | `config/cowork_domains.example.json` | Schema + esempio di configurazione per le connessioni remote. Copialo in `cowork_domains.json` (fuori da git, contiene i token). |
+| `config/deploy_access.example.json` | Schema + esempio per l'accesso FTP/SFTP opzionale al server. Copialo in `deploy_access.json` (fuori da git) solo se hai chiesto a Claude di persistere quelle credenziali per futuri upload/aggiornamenti di `tasks.php`. |
 | `connections/` | Una cartella per ogni connessione attiva (config/note/coda locale). Vedi `connections/README.md`. |
 | `examples/market-trend-dashboard-after/`, `examples/seo-geo-dashboard-after/` | Due dashboard prima/dopo reali e complete (API a pagamento diretta vs. coda del Cowork Connector) — come riferimento per costruire la tua. |
 
@@ -133,6 +134,9 @@ Dettagli di ogni payload in `CLAUDE.md` e nel codice commentato di `core/tasks.p
 - Usa **HTTPS** sul server (il token viaggia in header/querystring).
 - Token lungo, casuale, mai committato: `cowork_domains.json` è in `.gitignore`,
   così come le sottocartelle reali di `connections/`.
+- Se hai fatto persistere a Claude l'accesso FTP/SFTP per gli upload/aggiornamenti
+  di `tasks.php`, vive in `deploy_access.json` — anch'esso fuori da git, mai
+  scritto in `connections/<nome>/NOTES.md`.
 - Tieni `cowork_tasks.db` (creato da `tasks.php`) fuori dal web root, o nega
   l'accesso diretto via HTTP a livello server.
 - Metti in coda solo prompt di cui ti fidi: vengono eseguiti con i permessi della

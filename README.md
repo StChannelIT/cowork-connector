@@ -2,7 +2,7 @@
 
 *[🇮🇹 Versione italiana](README.it.md)*
 
-`v0.1.0` — see `CHANGELOG.md` for the version history.
+`v0.4.0` — see `CHANGELOG.md` for the version history.
 
 Automating an external project usually means handing it a **paid API key**
 (OpenAI, Anthropic API, etc.) to consume by the token. Cowork Connector
@@ -73,6 +73,7 @@ fits best — see `connections/`.
 | `core/tasks.php` | API route for the **remote** queue, to upload to your server. Creates its own SQLite database next to itself. |
 | `core/runner_remote.py` | CLI client that talks to `tasks.php`. |
 | `config/cowork_domains.example.json` | Schema + example configuration for remote connections. Copy it to `cowork_domains.json` (outside git, holds the tokens). |
+| `config/deploy_access.example.json` | Schema + example for optional FTP/SFTP server access. Copy it to `deploy_access.json` (outside git) only if you asked Claude to persist those credentials for future `tasks.php` uploads/updates. |
 | `connections/` | One folder per active connection (config/notes/local queue). See `connections/README.md`. |
 | `examples/market-trend-dashboard-after/`, `examples/seo-geo-dashboard-after/` | Two real, complete before/after dashboards (direct paid API vs. Cowork Connector queue) — as a reference for building your own. |
 
@@ -137,6 +138,9 @@ connection in `connections/<name>/NOTES.md` during the wizard.
 - Use **HTTPS** on the server (the token travels in a header/querystring).
 - Long, random token, never committed: `cowork_domains.json` is in
   `.gitignore`, as are the real subfolders of `connections/`.
+- If you had Claude persist FTP/SFTP server access for `tasks.php`
+  uploads/updates, it lives in `deploy_access.json` — also out of git, never
+  written into `connections/<name>/NOTES.md`.
 - Keep `cowork_tasks.db` (created by `tasks.php`) outside the web root, or
   deny direct HTTP access to it at the server level.
 - Only queue prompts you trust: they run with the permissions of the Cowork

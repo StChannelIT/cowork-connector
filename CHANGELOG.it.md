@@ -10,9 +10,22 @@ PATCH per correzioni.
 
 Per taggare una release dopo aver fatto commit in locale:
 ```
-git tag -a v0.4.0 -m "v0.4.0"
-git push origin v0.4.0
+git tag -a v0.4.1 -m "v0.4.1"
+git push origin v0.4.1
 ```
+
+## [0.4.1] — 2026-07-16
+
+### Corretto
+- `README.md`/`README.it.md` mostravano ancora `v0.1.0` e non riportavano
+  `deploy_access.json` / `config/deploy_access.example.json` (aggiunti in
+  0.4.0) nella struttura del repo e nella sezione sicurezza. Allineati
+  entrambi alla versione e ai file attuali.
+
+### Modificato
+- `CLAUDE.local.md`: aggiunta una regola che richiede di tenere
+  `README.md`/`README.it.md` allineati ad ogni bump di versione, non solo
+  `CHANGELOG.md`.
 
 ## [0.4.0] — 2026-07-12
 
