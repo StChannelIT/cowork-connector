@@ -27,9 +27,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Local worktrees created by the Claude Code harness (isolated checkouts,
-# never part of the tracked tree)
-.claude/worktrees/
+# Local Claude Code harness state (settings, worktrees) — machine/session
+# specific, never part of the tracked tree
+.claude/
 
 # Local, non-shared process instructions for Claude Code (commit/versioning
 # rules) — not part of the public project docs

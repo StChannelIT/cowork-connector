@@ -10,9 +10,18 @@ for fixes.
 
 To tag a release after committing locally:
 ```
-git tag -a v0.4.1 -m "v0.4.1"
-git push origin v0.4.1
+git tag -a v0.4.2 -m "v0.4.2"
+git push origin v0.4.2
 ```
+
+## [0.4.2] — 2026-07-16
+
+### Changed
+- `.gitignore`: `.claude/` is now fully excluded (was only excluding
+  `.claude/worktrees/`) — it holds machine/session-specific Claude Code
+  harness state, not project config meant to be shared.
+- Untracked `.claude/settings.json` (kept on disk, removed from git going
+  forward).
 
 ## [0.4.1] — 2026-07-16
 

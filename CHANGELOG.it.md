@@ -10,9 +10,18 @@ PATCH per correzioni.
 
 Per taggare una release dopo aver fatto commit in locale:
 ```
-git tag -a v0.4.1 -m "v0.4.1"
-git push origin v0.4.1
+git tag -a v0.4.2 -m "v0.4.2"
+git push origin v0.4.2
 ```
+
+## [0.4.2] — 2026-07-16
+
+### Modificato
+- `.gitignore`: `.claude/` ora è escluso interamente (prima era escluso solo
+  `.claude/worktrees/`) — contiene stato dell'harness Claude Code
+  specifico per macchina/sessione, non config di progetto da condividere.
+- Rimosso dal tracking `.claude/settings.json` (resta sul disco, sparisce
+  solo da git d'ora in poi).
 
 ## [0.4.1] — 2026-07-16
 
