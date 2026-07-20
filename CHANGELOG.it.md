@@ -10,9 +10,30 @@ PATCH per correzioni.
 
 Per taggare una release dopo aver fatto commit in locale:
 ```
-git tag -a v0.4.3 -m "v0.4.3"
-git push origin v0.4.3
+git tag -a v0.4.4 -m "v0.4.4"
+git push origin v0.4.4
 ```
+
+## [0.4.4] — 2026-07-20
+
+### Aggiunto
+- **Fase 5 del wizard — star e condivisione** (`CLAUDE.md` / `CLAUDE.it.md`):
+  quando una connessione è verificata e funzionante, Claude chiude il setup
+  invitando l'utente a mettere una star al repo e a passarlo a chi sta ancora
+  pagando a token una cosa che l'abbonamento Cowork già copre. Il passaparola
+  è l'unica distribuzione che questo progetto ha, e la fine di un setup
+  riuscito è l'unico momento in cui chiederlo è meritato e non invadente.
+- Paletti perché non diventi rumore: **una volta sola a setup, mai dentro un
+  ciclo schedulato** (un task ricorrente che lo stampa brucerebbe token e
+  infastidirebbe ad ogni esecuzione), solo dopo un esito positivo, nessun
+  sollecito se ignorato. È annotato anche che GitHub **non espone un URL che
+  mette la star con un click** — serve una POST autenticata dal sito — quindi
+  Claude dà il link semplice al repo invece di inventarsi un endpoint o di
+  mettere la star via API al posto dell'utente.
+
+### Modificato
+- Il wizard è ora descritto a **5 fasi** invece di 4 in `CLAUDE.md`,
+  `CLAUDE.it.md`, `README.md`, `README.it.md`.
 
 ## [0.4.3] — 2026-07-16
 

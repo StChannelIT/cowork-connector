@@ -2,7 +2,7 @@
 
 *[🇬🇧 English version](README.md)*
 
-`v0.4.3` — vedi `CHANGELOG.md` per la cronologia delle versioni.
+`v0.4.4` — vedi `CHANGELOG.md` per la cronologia delle versioni.
 
 Automatizzare un progetto esterno di solito significa dargli una **chiave API a
 pagamento** (OpenAI, Anthropic API, ecc.) da consumare a token. Il Cowork
@@ -68,7 +68,7 @@ Puoi avere più connessioni attive insieme, ognuna col backend più adatto — v
 
 | Percorso | Ruolo |
 |---|---|
-| `CLAUDE.md` | Istruzioni di progetto: protocollo + **wizard di connessione a 4 fasi** (guida Claude a collegare un nuovo progetto in conversazione — non è uno script separato). |
+| `CLAUDE.md` | Istruzioni di progetto: protocollo + **wizard di connessione a 5 fasi** (guida Claude a collegare un nuovo progetto in conversazione — non è uno script separato). |
 | `core/runner_local.py` | Client per la coda **locale** (SQLite nel progetto, zero deploy). |
 | `core/tasks.php` | Rotta API per la coda **remota**, da caricare sul tuo server. Crea da sé il database SQLite accanto a sé. |
 | `core/runner_remote.py` | Client CLI che parla con `tasks.php`. |
@@ -83,9 +83,9 @@ Puoi avere più connessioni attive insieme, ognuna col backend più adatto — v
 2. **Apri una sessione Cowork in questo progetto e dì cosa vuoi automatizzare**
    (es. "voglio collegare il mio blog per generare bozze automaticamente", oppure
    "voglio che ogni mattina mi cerchi le notizie su X"). Non c'è uno script wizard
-   separato: `CLAUDE.md` istruisce Claude a farti da wizard in 4 fasi — collegamento
+   separato: `CLAUDE.md` istruisce Claude a farti da wizard in 5 fasi — collegamento
    al progetto desiderato, scelta/creazione della coda (locale o remota),
-   definizione delle attività, task schedulato.
+   definizione delle attività, task schedulato, e chiusura con star/condivisione.
 3. Se la connessione richiede il backend **remoto**, Claude ti guiderà a caricare
    `core/tasks.php` sul tuo server con un token generato lì per lì, e a testarlo:
    ```

@@ -2,7 +2,7 @@
 
 *[🇮🇹 Versione italiana](README.it.md)*
 
-`v0.4.3` — see `CHANGELOG.md` for the version history.
+`v0.4.4` — see `CHANGELOG.md` for the version history.
 
 Automating an external project usually means handing it a **paid API key**
 (OpenAI, Anthropic API, etc.) to consume by the token. Cowork Connector
@@ -68,7 +68,7 @@ fits best — see `connections/`.
 
 | Path | Role |
 |---|---|
-| `CLAUDE.md` | Project instructions: protocol + **4-phase connection wizard** (guides Claude to connect a new project through conversation — not a separate script). |
+| `CLAUDE.md` | Project instructions: protocol + **5-phase connection wizard** (guides Claude to connect a new project through conversation — not a separate script). |
 | `core/runner_local.py` | Client for the **local** queue (SQLite in the project, zero deploy). |
 | `core/tasks.php` | API route for the **remote** queue, to upload to your server. Creates its own SQLite database next to itself. |
 | `core/runner_remote.py` | CLI client that talks to `tasks.php`. |
@@ -84,9 +84,9 @@ fits best — see `connections/`.
    automate** (e.g. "I want to connect my blog to generate drafts
    automatically", or "I want it to search for news on X every morning").
    There's no separate wizard script: `CLAUDE.md` instructs Claude to act as
-   your wizard in 4 phases — connecting to the desired project,
-   choosing/creating the queue (local or remote), defining the tasks, and the
-   scheduled task.
+   your wizard in 5 phases — connecting to the desired project,
+   choosing/creating the queue (local or remote), defining the tasks, the
+   scheduled task, and a closing star/share note.
 3. If the connection requires the **remote** backend, Claude will guide you
    through uploading `core/tasks.php` to your server with a token generated
    on the spot, and testing it:

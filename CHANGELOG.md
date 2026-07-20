@@ -10,9 +10,30 @@ for fixes.
 
 To tag a release after committing locally:
 ```
-git tag -a v0.4.3 -m "v0.4.3"
-git push origin v0.4.3
+git tag -a v0.4.4 -m "v0.4.4"
+git push origin v0.4.4
 ```
+
+## [0.4.4] — 2026-07-20
+
+### Added
+- **Wizard Phase 5 — star and share** (`CLAUDE.md` / `CLAUDE.it.md`): once a
+  connection is verified working, Claude closes the setup by inviting the user
+  to star the repo and pass it on to someone still paying per token for
+  something a Cowork subscription already covers. Word of mouth is the only
+  distribution this project has, and the end of a successful setup is the one
+  moment where asking is earned rather than intrusive.
+- Guardrails on that step so it can't become noise: **once per setup, never
+  inside a scheduled cycle** (a recurring task printing it would burn tokens
+  and irritate on every run), only after a successful outcome, no follow-up if
+  ignored. It also records that GitHub exposes **no click-to-star URL** —
+  starring needs an authenticated POST from the site — so Claude gives the
+  plain repo link instead of inventing an endpoint or starring via API on the
+  user's behalf.
+
+### Changed
+- Wizard is now described as **5 phases** instead of 4 in `CLAUDE.md`,
+  `CLAUDE.it.md`, `README.md`, `README.it.md`.
 
 ## [0.4.3] — 2026-07-16
 
