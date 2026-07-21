@@ -2,7 +2,12 @@
 
 *[🇬🇧 English version](README.md)*
 
-`v0.4.4` — vedi `CHANGELOG.md` per la cronologia delle versioni.
+`v0.4.5` — vedi `CHANGELOG.md` per la cronologia delle versioni.
+
+![Licenza MIT](https://img.shields.io/badge/licenza-MIT-green)
+![PRs Welcome](https://img.shields.io/badge/PRs-benvenute-brightgreen)
+![Docs](https://img.shields.io/badge/docs-en%20%2F%20it-blue)
+![Backend](https://img.shields.io/badge/backend-locale%20%7C%20remoto-orange)
 
 Automatizzare un progetto esterno di solito significa dargli una **chiave API a
 pagamento** (OpenAI, Anthropic API, ecc.) da consumare a token. Il Cowork

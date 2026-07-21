@@ -10,9 +10,16 @@ for fixes.
 
 To tag a release after committing locally:
 ```
-git tag -a v0.4.4 -m "v0.4.4"
-git push origin v0.4.4
+git tag -a v0.4.5 -m "v0.4.5"
+git push origin v0.4.5
 ```
+
+## [0.4.5] — 2026-07-21
+
+### Changed
+- `README.md` / `README.it.md`: added badges for license (MIT), PRs welcome,
+  bilingual docs, and supported backends (local/remote), shown right under
+  the version line.
 
 ## [0.4.4] — 2026-07-20
 

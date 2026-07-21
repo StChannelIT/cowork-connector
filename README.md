@@ -2,7 +2,12 @@
 
 *[🇮🇹 Versione italiana](README.it.md)*
 
-`v0.4.4` — see `CHANGELOG.md` for the version history.
+`v0.4.5` — see `CHANGELOG.md` for the version history.
+
+![License MIT](https://img.shields.io/badge/license-MIT-green)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+![Docs](https://img.shields.io/badge/docs-en%20%2F%20it-blue)
+![Backend](https://img.shields.io/badge/backend-local%20%7C%20remote-orange)
 
 Automating an external project usually means handing it a **paid API key**
 (OpenAI, Anthropic API, etc.) to consume by the token. Cowork Connector
